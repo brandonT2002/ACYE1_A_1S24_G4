@@ -244,8 +244,12 @@ char curMessage[BUF_SIZE] = { "" };
 char buffer[BUFFER_SIZE];
 int head = 0;
 int tail = 0;
+// temporizador
 unsigned long displayStartTime = 0;
-const unsigned long displayDuration = 5000;
+const unsigned long displayDuration = 10000;
+// direccion
+const byte switchPin = 13;  // Pin donde está conectado el switch
+bool scrollRight = true;    // Variable para controlar la dirección del desplazamiento
 
 String printBuffer() {
   String aux = "";
@@ -272,18 +276,20 @@ void clearBuffer() {
   }
 }
 
-void displayScrollingText(const char* text) {
-  displayStartTime = millis();  // Actualizar displayStartTime al iniciar el desplazamiento
+void displayScrollingText(const char* text, bool scrollRight) {
+  displayStartTime = millis();
+  int scrollDirection = (scrollRight) ? PA_SCROLL_RIGHT : PA_SCROLL_LEFT;  // Cambiado a PA_SCROLL_RIGHT si scrollRight es verdadero
+  
   while (millis() - displayStartTime < displayDuration) {
     P.displayClear();
-    P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_LEFT);
+    P.displayText(text, PA_LEFT, 60, 0, scrollDirection);
     while (!P.displayAnimate()) {
-      // Espera hasta que el desplazamiento del texto haya terminado
       if (millis() - displayStartTime >= displayDuration) {
-        break;  // Salir del bucle si ha pasado el tiempo displayDuration
+        break;
       }
     }
   }
+
   memset(curMessage, 0, sizeof(curMessage));
   clearBuffer();
   P.displayClear();
@@ -293,10 +299,15 @@ void displayScrollingText(const char* text) {
 void setup() {
   Serial.begin(9600);
   P.begin();
+
+  pinMode(switchPin, INPUT);  // Configurar el pin del switch como entrada con pull-up
 }
 
 void loop() {
   P.displayAnimate();
+
+  // Leer el estado del switch
+  bool switchState = digitalRead(switchPin);
 
   static String input = "";
   char key = keypad.getKey();
@@ -320,7 +331,7 @@ void loop() {
       P.displayClear();
       P.displayReset();
       // P.print(curMessage);
-      displayScrollingText(curMessage);
+      displayScrollingText(curMessage, switchState);
       input = "";
       resultado = 0.0;
     } else if (key == '$') {
@@ -329,5 +340,11 @@ void loop() {
       P.displayClear();
       P.displayReset();
     }
+  }
+
+  static bool lastSwitchState = switchState;
+  if (switchState != lastSwitchState) {
+    P.displayReset();  // Reiniciar la animación para un cambio inmediato
+    lastSwitchState = switchState;
   }
 }
