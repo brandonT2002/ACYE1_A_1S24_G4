@@ -53,7 +53,8 @@ void apagarLEDs() {
 
 
 void calculadora() {
-  Serial.println("MODO CALCULADORA");
+  Serial.println(" "); 
+  Serial.println("Cambiando a modo Calculadora"); //estado
   
   while (digitalRead(push_boton1) == HIGH || digitalRead(push_boton2) == HIGH) {
     delay(50);
@@ -73,63 +74,71 @@ void calculadora() {
 
 
 void cambiarClave() {
-  Serial.println("Ingrese la nueva clave:");
+  Serial.println(" ");
+  Serial.println("Esperando contrasenia, ingrese la nueva clave "); //estado
 
   INDICE = 0;         // Reiniciar el índice antes de ingresar la nueva clave
   int longitud = 0;   // Variable para almacenar la longitud de la clave ingresada
+
+  // Usar una variable temporal para almacenar la nueva clave
+  char nuevaClave[9];
 
   while (true) {
     TECLA = teclado1.getKey();
 
     if (TECLA) {
-      if (TECLA == '#') { 
+      if (TECLA == '#') {
         if (longitud != 6 && longitud != 8) {
-          Serial.println("\n La clave debe tener 6 u 8 caracteres. Intente de nuevo.");
+          Serial.println(" La clave debe tener 6 u 8 caracteres. Intente de nuevo.");
           modoSeguridad();
           return;
         }
 
-        // Verificar patron para clave de 6 
+        // Verificar patron para clave de 6
         if (longitud == 6 &&
-            !((isdigit(CLAVE_DEFECTO[0]) && isalpha(CLAVE_DEFECTO[1]) && 
-               isdigit(CLAVE_DEFECTO[2]) && isalpha(CLAVE_DEFECTO[3]) && 
-               isdigit(CLAVE_DEFECTO[4]) && isdigit(CLAVE_DEFECTO[5])) ||
-              (isalpha(CLAVE_DEFECTO[0]) && isdigit(CLAVE_DEFECTO[1]) &&
-               isalpha(CLAVE_DEFECTO[2]) && isdigit(CLAVE_DEFECTO[3]) && 
-               isalpha(CLAVE_DEFECTO[4]) && isdigit(CLAVE_DEFECTO[5])))) {
-          Serial.println("\n Patron incorrecto para clave de 6 caracteres.");
+            !((isdigit(nuevaClave[0]) && isalpha(nuevaClave[1]) &&
+               isdigit(nuevaClave[2]) && isalpha(nuevaClave[3]) &&
+               isdigit(nuevaClave[4]) && isdigit(nuevaClave[5])) ||
+              (isalpha(nuevaClave[0]) && isdigit(nuevaClave[1]) &&
+               isalpha(nuevaClave[2]) && isdigit(nuevaClave[3]) &&
+               isalpha(nuevaClave[4]) && isdigit(nuevaClave[5])))) {
+          Serial.println(" Patron incorrecto para clave de 6 caracteres.");
           modoSeguridad();
           return;
         }
 
         // Verificar patron para clave de 8
         if (longitud == 8 &&
-            !((isalpha(CLAVE_DEFECTO[0]) && isdigit(CLAVE_DEFECTO[1]) && 
-               isalpha(CLAVE_DEFECTO[2]) && isalpha(CLAVE_DEFECTO[3]) && 
-               isdigit(CLAVE_DEFECTO[4]) && isdigit(CLAVE_DEFECTO[5]) &&
-               isalpha(CLAVE_DEFECTO[6]) && isdigit(CLAVE_DEFECTO[7])) ||
-              (isdigit(CLAVE_DEFECTO[0]) && isalpha(CLAVE_DEFECTO[1]) &&
-               isdigit(CLAVE_DEFECTO[2]) && isdigit(CLAVE_DEFECTO[3]) && 
-               isalpha(CLAVE_DEFECTO[4]) && isalpha(CLAVE_DEFECTO[5]) &&
-               isdigit(CLAVE_DEFECTO[6]) && isalpha(CLAVE_DEFECTO[7])))) {
-          Serial.println("\n Patron incorrecto para clave de 8 caracteres.");
+            !((isalpha(nuevaClave[0]) && isdigit(nuevaClave[1]) &&
+               isalpha(nuevaClave[2]) && isalpha(nuevaClave[3]) &&
+               isdigit(nuevaClave[4]) && isdigit(nuevaClave[5]) &&
+               isalpha(nuevaClave[6]) && isdigit(nuevaClave[7])) ||
+              (isdigit(nuevaClave[0]) && isalpha(nuevaClave[1]) &&
+               isdigit(nuevaClave[2]) && isdigit(nuevaClave[3]) &&
+               isalpha(nuevaClave[4]) && isalpha(nuevaClave[5]) &&
+               isdigit(nuevaClave[6]) && isalpha(nuevaClave[7])))) {
+          Serial.println(" Patron incorrecto para clave de 8 caracteres.");
           modoSeguridad();
           return;
         }
 
-        Serial.println("\n Nueva clave ingresada correctamente.");
+        // Actualizar CLAVE_DEFECTO con la nueva clave
+        strncpy(CLAVE_DEFECTO, nuevaClave, sizeof(CLAVE_DEFECTO) - 1);
+        CLAVE_DEFECTO[sizeof(CLAVE_DEFECTO) - 1] = '\0';
+
+        Serial.println(" Nueva clave ingresada correctamente.");
 
         // Esperando la tecla '#' para confirmar el cambio
         while (teclado1.getKey() != '#') {
           delay(50);
         }
 
-        Serial.println(" Cambio de clave completado.");
-        delay(300); 
-         
-        return;  
+        Serial.println(" Nueva clave almacenada correctamente."); //estado
+        delay(300);
+
+        return;
       } else {
-        CLAVE_DEFECTO[INDICE] = TECLA;
+        nuevaClave[INDICE] = TECLA;
         INDICE++;
         Serial.print(TECLA);
         longitud++;
@@ -140,8 +149,12 @@ void cambiarClave() {
 
 
 
+
 void modoSeguridad() {
-  Serial.println("MODO SEGURIDAD");
+
+  Serial.println(" ");
+  Serial.println("Cambiando a modo Seguridad"); //estado
+  Serial.println("=== ARMADO ==="); //estado
 
   while (digitalRead(push_boton1) == HIGH || digitalRead(push_boton2) == HIGH) {
     delay(50);
@@ -163,6 +176,10 @@ void modoSeguridad() {
       calculadora();
       return;
     }
+     if (digitalRead(push_boton1) == HIGH) {
+      sistema();
+      return;
+    }
   }
 }
 
@@ -170,29 +187,37 @@ void modoSeguridad() {
 
 void sistema() {
   static bool claveCorrecta = false;
-
-  Serial.println(" Ingrese password");
+  
+  Serial.println(" ");
+  Serial.println("Ingrese contrasenia");
 
   while (true) {
     TECLA = teclado1.getKey();
 
     if (TECLA == '#') {
       CLAVE[INDICE] = '\0';
+      Serial.println(" ");
 
       if (strcmp(CLAVE, CLAVE_DEFECTO) == 0) {
         // Contraseña correcta
         claveCorrecta = true;
-        Serial.println(" Correcta");
+        Serial.println("Validando contrasenia... "); //estado
+        Serial.println("La contrasenia se ha ingresado correctamente"); 
+        Serial.println(" ");
+        Serial.println("Desbloqueado..."); //estado
         intentosIncorrectos = 0;  // Restablecer el contador en caso de éxito
         encenderLEDs(intentosIncorrectos);
         modoSeguridad();
       } else {// Contraseña incorrecta
-        Serial.println(" Incorrecta");
+        Serial.println("Validando contrasenia... "); //estado
+        Serial.println("La contrasenia no se ha ingresado correctamente"); 
         intentosIncorrectos++;
         encenderLEDs(intentosIncorrectos);
 
         if (intentosIncorrectos >= maxIntentos) {// bloquear sistema
-          Serial.println("Demasiados intentos incorrectos. Bloqueando...");
+          Serial.println(" ");
+          Serial.println("Maximo de intentos fallidos");  //estado
+          Serial.println("Bloqueando...");
           tiempoBloqueo = millis(); // Establecer el tiempo de bloqueo actual
           while (millis() - tiempoBloqueo < 15000) { // Esperar hasta que pase el tiempo de bloqueo (15 segundos)
             delay(1000); 
@@ -210,7 +235,7 @@ void sistema() {
     } else if (TECLA) {
       CLAVE[INDICE] = TECLA;
       INDICE++;
-      Serial.print(TECLA);
+      Serial.print("*"); //encripta la contrasenia
     }
   }
 }
