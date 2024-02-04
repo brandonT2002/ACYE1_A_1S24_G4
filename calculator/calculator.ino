@@ -248,8 +248,10 @@ int tail = 0;
 unsigned long displayStartTime = 0;
 const unsigned long displayDuration = 10000;
 // direccion
-const byte switchPin = 13;  // Pin donde está conectado el switch
-bool scrollRight = true;    // Variable para controlar la dirección del desplazamiento
+const byte switchPin = 13;
+bool scrollRight = true;
+// animacion
+const byte switchPin2 = 12;
 
 String printBuffer() {
   String aux = "";
@@ -276,13 +278,17 @@ void clearBuffer() {
   }
 }
 
-void displayScrollingText(const char* text, bool scrollRight) {
+void displayScrollingText(const char* text, bool scrollRight, bool animation_) {
   displayStartTime = millis();
-  int scrollDirection = (scrollRight) ? PA_SCROLL_RIGHT : PA_SCROLL_LEFT;  // Cambiado a PA_SCROLL_RIGHT si scrollRight es verdadero
+  int scrollDirection = (scrollRight) ? PA_SCROLL_RIGHT : PA_SCROLL_LEFT;
   
   while (millis() - displayStartTime < displayDuration) {
     P.displayClear();
-    P.displayText(text, PA_LEFT, 60, 0, scrollDirection);
+    if (animation_) {
+      animation(text, animation_, scrollDirection);
+    } else {
+      P.displayText(text, PA_LEFT, 60, 0, scrollDirection);
+    }
     while (!P.displayAnimate()) {
       if (millis() - displayStartTime >= displayDuration) {
         break;
@@ -296,11 +302,107 @@ void displayScrollingText(const char* text, bool scrollRight) {
   P.displayReset();
 }
 
+void animation(const char* text, bool animation_, int scrollDirection){
+  if (animation_) {
+    int indice = random(1, 22);
+    
+    switch (indice) {
+    case 1:
+      P.displayText(text, PA_LEFT, 60, 0, PA_PRINT & scrollDirection);
+      break;
+
+    case 2:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP & scrollDirection);
+      break;
+
+    case 3:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SLICE & scrollDirection);
+      break;
+
+    case 4:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SCAN_HORIZ & scrollDirection);
+      break;
+
+    case 5:
+      P.displayText(text, PA_LEFT, 60, 0, PA_OPENING_CURSOR & scrollDirection);
+      break;
+
+    case 6:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_DOWN_RIGHT & scrollDirection);
+      break;
+
+    case 7:
+      P.displayText(text, PA_LEFT, 60, 0, PA_WIPE & scrollDirection);
+      break;
+
+    case 8:
+      P.displayText(text, PA_LEFT, 60, 0, PA_GROW_UP & scrollDirection);
+      break;
+
+    case 9:
+      P.displayText(text, PA_LEFT, 60, 0, PA_CLOSING_CURSOR & scrollDirection);
+      break;
+
+    case 10:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP_LEFT & scrollDirection);
+      break;
+
+    case 11:
+      P.displayText(text, PA_LEFT, 60, 0, PA_MESH & scrollDirection);
+      break;
+
+    case 12:
+      P.displayText(text, PA_LEFT, 60, 0, PA_OPENING & scrollDirection);
+      break;
+
+    case 13:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP_RIGHT & scrollDirection);
+      break;
+
+    case 14:
+      P.displayText(text, PA_LEFT, 60, 0, PA_BLINDS & scrollDirection);
+      break;
+
+    case 15:
+      P.displayText(text, PA_LEFT, 60, 0, PA_DISSOLVE & scrollDirection);
+      break;
+
+    case 16:
+      P.displayText(text, PA_LEFT, 60, 0, PA_CLOSING & scrollDirection);
+      break;
+
+    case 17:
+      P.displayText(text, PA_LEFT, 60, 0, PA_RANDOM & scrollDirection);
+      break;
+
+    case 18:
+      P.displayText(text, PA_LEFT, 60, 0, PA_WIPE_CURSOR & scrollDirection);
+      break;
+
+    case 19:
+      P.displayText(text, PA_LEFT, 60, 0, PA_GROW_DOWN & scrollDirection);
+      break;
+
+    case 20:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SCAN_VERT & scrollDirection);
+      break;
+
+    case 21:
+      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_DOWN_LEFT & scrollDirection);
+      break;
+
+    default:
+      break;
+    }
+  }
+}
+
 void setup() {
   Serial.begin(9600);
   P.begin();
 
-  pinMode(switchPin, INPUT);  // Configurar el pin del switch como entrada con pull-up
+  pinMode(switchPin, INPUT);
+  pinMode(switchPin2, INPUT);
 }
 
 void loop() {
@@ -308,6 +410,7 @@ void loop() {
 
   // Leer el estado del switch
   bool switchState = digitalRead(switchPin);
+  bool switch2State = digitalRead(switchPin2);
 
   static String input = "";
   char key = keypad.getKey();
@@ -331,7 +434,7 @@ void loop() {
       P.displayClear();
       P.displayReset();
       // P.print(curMessage);
-      displayScrollingText(curMessage, switchState);
+      displayScrollingText(curMessage, switchState, switch2State);
       input = "";
       resultado = 0.0;
     } else if (key == '$') {
