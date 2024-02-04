@@ -1,11 +1,10 @@
 #include <Keypad.h>
 #include <MD_Parola.h>
 #include <MD_MAX72xx.h>
-#include <SPI.h>
 
 #define MAX_SIZE 100  // Define el tamaño máximo de la pila
 struct Valor {
-  float valor;
+  int valor;
   char simbolo;
 };
 class Pila {
@@ -83,11 +82,11 @@ public:
     if (error.length() != 0) {
       return error;
     } else {
-      float resultado = evaluarExp();
+      int resultado = evaluarExp();
       if (error.length() != 0) {
         return error;
       }
-      String format = "Resultado = " + String(resultado);
+      String format = "RESULTADO = {" + String(resultado) + "}";
       Serial.println(exp + " = " + resultado);
       return format;
     }
@@ -107,7 +106,7 @@ public:
   }
 
   int precedencia(char op) {
-    if (op == '/') {  
+    if (op == '/') {
       return 3;
     } else if (op == '*') {
       return 2;
@@ -118,12 +117,18 @@ public:
     }
   }
 
-  float operar(char simbolo, float dato1, float dato2) {
+  int operar(char simbolo, int dato1, int dato2) {
     switch (simbolo) {
       case '+':
         return dato1 + dato2;
       case '-':
-        return dato1 - dato2;
+        //return dato1 - dato2;
+        if (pila1.size() == 1) {
+          return -dato1;  // Negación
+        } else {
+          return dato1 - dato2;  // Resta con cambio de orden
+        }
+
       case '*':
         return dato1 * dato2;
       case '/':
@@ -139,18 +144,24 @@ public:
 
   void infijaPostFija() {
     for (int i = 0; i < infija.length(); i++) {
-      if (esOperando(infija[i])) {
-        // Manejar números de dos dígitos o más
+      if (esOperando(infija[i]) || (infija[i] == '-' && (i == 0 || esOperador(infija[i - 1])))) {
         int num = 0;
+        int sign = 1;
+        if (infija[i] == '-') {
+          sign = -1;
+          i++;
+        }
         while (i < infija.length() && !esOperador(infija[i])) {
           num = num * 10 + (infija[i] - '0');
           i++;
         }
-        i--;  // Retroceder para compensar el incremento final en el bucle
-        Valor valor_operando = { (float)num, ' ' };
+
+        i--;
+        num *= sign;
+
+        Valor valor_operando = { (int)num, ' ' };
         postfija += String(num) + " ";
       } else if (esOperador(infija[i])) {
-        // Si el operador en la pila tiene mayor precedencia, sacarlo y agregarlo a la postfija
         Valor aux = pila1.peek();
         if (aux.valor == 404.0 && aux.simbolo == "$") {
           error = "Falta de operandos";
@@ -158,14 +169,13 @@ public:
           while (!pila1.estaVacia() && precedencia(aux.simbolo) >= precedencia(infija[i])) {
             Valor valor_operador = pila1.pop();
             postfija += String(valor_operador.simbolo) + " ";
+            aux = pila1.peek();  // Actualizar el valor auxiliar después de sacar un operador de la pila
           }
         }
-        // Agregar el operador actual a la pila
         Valor valor_operador = { 0.0f, infija[i] };
         pila1.push(valor_operador);
       }
     }
-    // Sacar todos los operadores restantes de la pila y agregarlos a la postfija
     while (!pila1.estaVacia()) {
       Valor valor_operador = pila1.pop();
       postfija += String(valor_operador.simbolo) + " ";
@@ -173,8 +183,9 @@ public:
   }
 
 
-  float evaluarExp() {
-    float resultado = 0;
+
+  int evaluarExp() {
+    int resultado = 0;
 
     char postfijaArray[postfija.length() + 1];
     postfija.toCharArray(postfijaArray, postfija.length() + 1);
@@ -182,19 +193,19 @@ public:
     char* token = strtok(postfijaArray, " ");
     bool esError = false;
     while (token != NULL) {
-      if (esOperando(token[0])) {  // Verificar si es un operando
-        float valor = atof(token);
+      if (esOperando(token[0]) || (token[0] == '-' && strlen(token) > 1)) {  // Verificar si es un operando o un número negativo
+        int valor = atoi(token);
         Valor valor_operando = { valor, ' ' };
         pila1.push(valor_operando);
       } else if (esOperador(token[0])) {  // Verificar si es un operador
-        Valor dato2 = pila1.pop();
-        Valor dato1 = pila1.pop();
-        if ((dato2.valor == 404.0 && dato2.simbolo == '$') || (dato1.valor == 404.0 && dato1.simbolo == '$')) {
+        if (pila1.size() < 2) {           // Verificar si hay suficientes operandos en la pila
           error = "Falta de operandos";
           esError = true;
           break;
         }
-        float resultado_operacion = operar(token[0], dato1.valor, dato2.valor);
+        Valor dato2 = pila1.pop();
+        Valor dato1 = pila1.pop();
+        int resultado_operacion = operar(token[0], dato1.valor, dato2.valor);
         if (error.length() != 0) {
           esError = true;
           break;
@@ -281,7 +292,7 @@ void clearBuffer() {
 void displayScrollingText(const char* text, bool scrollRight, bool animation_) {
   displayStartTime = millis();
   int scrollDirection = (scrollRight) ? PA_SCROLL_RIGHT : PA_SCROLL_LEFT;
-  
+
   while (millis() - displayStartTime < displayDuration) {
     P.displayClear();
     if (animation_) {
@@ -302,97 +313,97 @@ void displayScrollingText(const char* text, bool scrollRight, bool animation_) {
   P.displayReset();
 }
 
-void animation(const char* text, bool animation_, int scrollDirection){
+void animation(const char* text, bool animation_, int scrollDirection) {
   if (animation_) {
     int indice = random(1, 22);
-    
+
     switch (indice) {
-    case 1:
-      P.displayText(text, PA_LEFT, 60, 0, PA_PRINT & scrollDirection);
-      break;
+      case 1:
+        P.displayText(text, PA_LEFT, 60, 0, PA_PRINT & scrollDirection);
+        break;
 
-    case 2:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP & scrollDirection);
-      break;
+      case 2:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP & scrollDirection);
+        break;
 
-    case 3:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SLICE & scrollDirection);
-      break;
+      case 3:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SLICE & scrollDirection);
+        break;
 
-    case 4:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SCAN_HORIZ & scrollDirection);
-      break;
+      case 4:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SCAN_HORIZ & scrollDirection);
+        break;
 
-    case 5:
-      P.displayText(text, PA_LEFT, 60, 0, PA_OPENING_CURSOR & scrollDirection);
-      break;
+      case 5:
+        P.displayText(text, PA_LEFT, 60, 0, PA_OPENING_CURSOR & scrollDirection);
+        break;
 
-    case 6:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_DOWN_RIGHT & scrollDirection);
-      break;
+      case 6:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_DOWN_RIGHT & scrollDirection);
+        break;
 
-    case 7:
-      P.displayText(text, PA_LEFT, 60, 0, PA_WIPE & scrollDirection);
-      break;
+      case 7:
+        P.displayText(text, PA_LEFT, 60, 0, PA_WIPE & scrollDirection);
+        break;
 
-    case 8:
-      P.displayText(text, PA_LEFT, 60, 0, PA_GROW_UP & scrollDirection);
-      break;
+      case 8:
+        P.displayText(text, PA_LEFT, 60, 0, PA_GROW_UP & scrollDirection);
+        break;
 
-    case 9:
-      P.displayText(text, PA_LEFT, 60, 0, PA_CLOSING_CURSOR & scrollDirection);
-      break;
+      case 9:
+        P.displayText(text, PA_LEFT, 60, 0, PA_CLOSING_CURSOR & scrollDirection);
+        break;
 
-    case 10:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP_LEFT & scrollDirection);
-      break;
+      case 10:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP_LEFT & scrollDirection);
+        break;
 
-    case 11:
-      P.displayText(text, PA_LEFT, 60, 0, PA_MESH & scrollDirection);
-      break;
+      case 11:
+        P.displayText(text, PA_LEFT, 60, 0, PA_MESH & scrollDirection);
+        break;
 
-    case 12:
-      P.displayText(text, PA_LEFT, 60, 0, PA_OPENING & scrollDirection);
-      break;
+      case 12:
+        P.displayText(text, PA_LEFT, 60, 0, PA_OPENING & scrollDirection);
+        break;
 
-    case 13:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP_RIGHT & scrollDirection);
-      break;
+      case 13:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_UP_RIGHT & scrollDirection);
+        break;
 
-    case 14:
-      P.displayText(text, PA_LEFT, 60, 0, PA_BLINDS & scrollDirection);
-      break;
+      case 14:
+        P.displayText(text, PA_LEFT, 60, 0, PA_BLINDS & scrollDirection);
+        break;
 
-    case 15:
-      P.displayText(text, PA_LEFT, 60, 0, PA_DISSOLVE & scrollDirection);
-      break;
+      case 15:
+        P.displayText(text, PA_LEFT, 60, 0, PA_DISSOLVE & scrollDirection);
+        break;
 
-    case 16:
-      P.displayText(text, PA_LEFT, 60, 0, PA_CLOSING & scrollDirection);
-      break;
+      case 16:
+        P.displayText(text, PA_LEFT, 60, 0, PA_CLOSING & scrollDirection);
+        break;
 
-    case 17:
-      P.displayText(text, PA_LEFT, 60, 0, PA_RANDOM & scrollDirection);
-      break;
+      case 17:
+        P.displayText(text, PA_LEFT, 60, 0, PA_RANDOM & scrollDirection);
+        break;
 
-    case 18:
-      P.displayText(text, PA_LEFT, 60, 0, PA_WIPE_CURSOR & scrollDirection);
-      break;
+      case 18:
+        P.displayText(text, PA_LEFT, 60, 0, PA_WIPE_CURSOR & scrollDirection);
+        break;
 
-    case 19:
-      P.displayText(text, PA_LEFT, 60, 0, PA_GROW_DOWN & scrollDirection);
-      break;
+      case 19:
+        P.displayText(text, PA_LEFT, 60, 0, PA_GROW_DOWN & scrollDirection);
+        break;
 
-    case 20:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SCAN_VERT & scrollDirection);
-      break;
+      case 20:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SCAN_VERT & scrollDirection);
+        break;
 
-    case 21:
-      P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_DOWN_LEFT & scrollDirection);
-      break;
+      case 21:
+        P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_DOWN_LEFT & scrollDirection);
+        break;
 
-    default:
-      break;
+      default:
+        break;
     }
   }
 }
@@ -427,7 +438,7 @@ void loop() {
       String a = printBuffer();
       P.print(a.c_str());
     } else if (key == '#') {
-      //Serial.println(input);
+      Serial.println("-> Calculando");
       Calculadora calc;
       String resultado = calc.calcular(input);
       strcpy(curMessage, resultado.c_str());
@@ -437,6 +448,7 @@ void loop() {
       displayScrollingText(curMessage, switchState, switch2State);
       input = "";
       resultado = 0.0;
+       Serial.println("-> Esperando Operacion");
     } else if (key == '$') {
       input = "";
       clearBuffer();
