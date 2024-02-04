@@ -445,6 +445,7 @@ void loop() {
       P.displayClear();
       P.displayReset();
       // P.print(curMessage);
+      Serial.println("-> Mostrando Resultado");
       displayScrollingText(curMessage, switchState, switch2State);
       input = "";
       resultado = 0.0;
