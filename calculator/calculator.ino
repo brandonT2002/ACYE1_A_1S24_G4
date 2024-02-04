@@ -87,7 +87,7 @@ public:
       if (error.length() != 0) {
         return error;
       }
-      String format = "Resultado = " + String(resultado) + "-";
+      String format = "Resultado = " + String(resultado);
       Serial.println(exp + " = " + resultado);
       return format;
     }
@@ -244,6 +244,8 @@ char curMessage[BUF_SIZE] = { "" };
 char buffer[BUFFER_SIZE];
 int head = 0;
 int tail = 0;
+unsigned long displayStartTime = 0;
+const unsigned long displayDuration = 5000;
 
 String printBuffer() {
   String aux = "";
@@ -269,6 +271,25 @@ void clearBuffer() {
     buffer[i] = '\0';  // Llena el buffer con caracteres vacíos
   }
 }
+
+void displayScrollingText(const char* text) {
+  displayStartTime = millis();  // Actualizar displayStartTime al iniciar el desplazamiento
+  while (millis() - displayStartTime < displayDuration) {
+    P.displayClear();
+    P.displayText(text, PA_LEFT, 60, 0, PA_SCROLL_LEFT);
+    while (!P.displayAnimate()) {
+      // Espera hasta que el desplazamiento del texto haya terminado
+      if (millis() - displayStartTime >= displayDuration) {
+        break;  // Salir del bucle si ha pasado el tiempo displayDuration
+      }
+    }
+  }
+  memset(curMessage, 0, sizeof(curMessage));
+  clearBuffer();
+  P.displayClear();
+  P.displayReset();
+}
+
 void setup() {
   Serial.begin(9600);
   P.begin();
@@ -298,13 +319,10 @@ void loop() {
       strcpy(curMessage, resultado.c_str());
       P.displayClear();
       P.displayReset();
-      P.print(curMessage);
+      // P.print(curMessage);
+      displayScrollingText(curMessage);
       input = "";
       resultado = 0.0;
-      delay(3000);
-      clearBuffer();
-      P.displayClear();
-      P.displayReset();
     } else if (key == '$') {
       input = "";
       clearBuffer();
