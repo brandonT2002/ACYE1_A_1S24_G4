@@ -151,3 +151,198 @@ Finalmente se hace uso de la función calcular para poder realizar las operacion
     }
  }
 ```
+
+### Login
+
+**Funcion sistema**
+
+Solicita la entrada de una contraseña y verifica si coincide con la contraseña predeterminada. También gestiona el bloqueo del sistema después de un número máximo de intentos fallidos.
+
+```c++
+void sistema() {
+  static bool claveCorrecta = false;
+  
+  Serial.println(" ");
+  Serial.println("Ingrese contrasenia");
+
+  while (true) {
+    TECLA = teclado1.getKey();
+
+    if (TECLA == '#') {
+      CLAVE[INDICE] = '\0';
+      Serial.println(" ");
+
+      if (strcmp(CLAVE, CLAVE_DEFECTO) == 0) {
+        // Contraseña correcta
+        claveCorrecta = true;
+        Serial.println("Validando contrasenia... "); 
+        Serial.println("La contrasenia se ha ingresado correctamente"); 
+        Serial.println(" ");
+        Serial.println("Desbloqueado..."); 
+        intentosIncorrectos = 0;  
+        encenderLEDs(intentosIncorrectos);
+        modoSeguridad();
+      } else {// Contraseña incorrecta
+        Serial.println("Validando contrasenia... "); 
+        Serial.println("La contrasenia no se ha ingresado correctamente"); 
+        intentosIncorrectos++;
+        encenderLEDs(intentosIncorrectos);
+
+        if (intentosIncorrectos >= maxIntentos) {
+          Serial.println(" ");
+          Serial.println("Maximo de intentos fallidos"); 
+          Serial.println("Bloqueando...");
+          tiempoBloqueo = millis(); 
+          while (millis() - tiempoBloqueo < 15000) { 
+            delay(1000); 
+          }
+
+          intentosIncorrectos = 0;
+          apagarLEDs();
+          tiempoBloqueo = 0; 
+        }
+      }
+      
+      INDICE = 0;  
+      break;       
+    } else if (TECLA) {
+      CLAVE[INDICE] = TECLA;
+      INDICE++;
+      Serial.print("*"); 
+    }
+  }
+}
+```
+
+**Funcion seguridad**
+
+Cambia al modo de seguridad, donde se espera la entrada de una contraseña o cambio a funcionalidad de calculdora.
+
+```c++
+void modoSeguridad() {
+
+  Serial.println(" ");
+  Serial.println("Cambiando a modo Seguridad"); 
+  Serial.println("=== ARMADO ==="); 
+
+  while (digitalRead(push_boton1) == HIGH || digitalRead(push_boton2) == HIGH) {
+    delay(50);
+  }
+  
+  while (true) {
+    TECLA = teclado1.getKey();
+
+    if (TECLA) {
+      if (TECLA == '*') {
+        cambiarClave();
+        return; 
+      } else {
+        Serial.print(TECLA);
+      }
+    }
+
+    if (digitalRead(push_boton2) == HIGH) {
+      calculadora();
+      return;
+    }
+     if (digitalRead(push_boton1) == HIGH) {
+      sistema();
+      return;
+    }
+  }
+}
+```
+
+**Funcion cambiar clave**
+
+Permite cambiar la contraseña actual solicitando una nueva contraseña y verificando su formato antes de actualizar la contraseña predeterminada.
+
+```c++
+void cambiarClave() {
+  Serial.println(" ");
+  Serial.println("Esperando contrasenia, ingrese la nueva clave "); 
+
+  INDICE = 0;         
+  int longitud = 0;   
+
+  char nuevaClave[9];
+
+  while (true) {
+    TECLA = teclado1.getKey();
+
+    if (TECLA) {
+      if (TECLA == '#') {
+        if (longitud != 6 && longitud != 8) {
+          Serial.println(" La clave debe tener 6 u 8 caracteres. Intente de nuevo.");
+          modoSeguridad();
+          return;
+        }
+
+        // Verificar patron para clave de 6
+        if (longitud == 6 &&
+            !((isdigit(nuevaClave[0]) && isalpha(nuevaClave[1]) &&
+               isdigit(nuevaClave[2]) && isalpha(nuevaClave[3]) &&
+               isdigit(nuevaClave[4]) && isdigit(nuevaClave[5])) ||
+              (isalpha(nuevaClave[0]) && isdigit(nuevaClave[1]) &&
+               isalpha(nuevaClave[2]) && isdigit(nuevaClave[3]) &&
+               isalpha(nuevaClave[4]) && isdigit(nuevaClave[5])))) {
+          Serial.println(" Patron incorrecto para clave de 6 caracteres.");
+          modoSeguridad();
+          return;
+        }
+
+        // Verificar patron para clave de 8
+        if (longitud == 8 &&
+            !((isalpha(nuevaClave[0]) && isdigit(nuevaClave[1]) &&
+               isalpha(nuevaClave[2]) && isalpha(nuevaClave[3]) &&
+               isdigit(nuevaClave[4]) && isdigit(nuevaClave[5]) &&
+               isalpha(nuevaClave[6]) && isdigit(nuevaClave[7])) ||
+              (isdigit(nuevaClave[0]) && isalpha(nuevaClave[1]) &&
+               isdigit(nuevaClave[2]) && isdigit(nuevaClave[3]) &&
+               isalpha(nuevaClave[4]) && isalpha(nuevaClave[5]) &&
+               isdigit(nuevaClave[6]) && isalpha(nuevaClave[7])))) {
+          Serial.println(" Patron incorrecto para clave de 8 caracteres.");
+          modoSeguridad();
+          return;
+        }
+
+        // Actualizar CLAVE_DEFECTO con la nueva clave
+        strncpy(CLAVE_DEFECTO, nuevaClave, sizeof(CLAVE_DEFECTO) - 1);
+        CLAVE_DEFECTO[sizeof(CLAVE_DEFECTO) - 1] = '\0';
+
+        Serial.println(" Nueva clave ingresada correctamente.");
+
+
+        while (teclado1.getKey() != '#') {
+          delay(50);
+        }
+
+        Serial.println(" Nueva clave almacenada correctamente."); 
+        delay(300);
+
+        return;
+      } else {
+        nuevaClave[INDICE] = TECLA;
+        INDICE++;
+        Serial.print(TECLA);
+        longitud++;
+      }
+    }
+  }
+}
+```
+
+**Funcion encenderLEDs**
+
+Enciende los LEDs correspondientes según la cantidad proporcionada.
+ 
+```c++
+void encenderLEDs(int cantidad) {
+  digitalWrite(ledPin1, cantidad >= 1 ? HIGH : LOW);
+  digitalWrite(ledPin2, cantidad >= 2 ? HIGH : LOW);
+  digitalWrite(ledPin3, cantidad == 3 ? HIGH : LOW);
+}
+```
+
+
+
