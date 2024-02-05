@@ -26,6 +26,8 @@ const byte switchPin = 13;
 bool scrollRight = true;
 // animacion
 const byte switchPin2 = 12;
+int indice = 0;
+static bool unaVez;
 // velocidad
 int potentiometerPin = A0;
 int potValue = 0;
@@ -311,10 +313,25 @@ void displayScrollingText(const char* text, bool scrollRight, bool animation_, i
   int scrollDirection = (scrollRight) ? PA_SCROLL_RIGHT : PA_SCROLL_LEFT;
   P.setSpeed(speed_);
 
+  if(scrollRight) {
+    Serial.println("  -> Direccion: Derecha");
+  } else {
+    Serial.println("  -> Direccion: Izquierda");
+  }
+  if (animation_) {
+    indice = random(1, 22);
+  } else {
+    Serial.println("  -> Sin efecto");
+  }
+
   while (millis() - displayStartTime < displayDuration) {
     P.displayClear();
     if (animation_) {
-      animation(text, animation_, scrollDirection, speed_);
+      if(scrollRight) {
+        animation(text, indice, PA_SCROLL_RIGHT, speed_);
+      } else {
+        animation(text, indice, PA_SCROLL_LEFT, speed_);
+      }
     } else {
       P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
     }
@@ -324,107 +341,237 @@ void displayScrollingText(const char* text, bool scrollRight, bool animation_, i
       }
     }
   }
-
   memset(curMessage, 0, sizeof(curMessage));
   clearBuffer();
   P.displayClear();
   P.displayReset();
 }
 
-void animation(const char* text, bool animation_, int scrollDirection, int speed_) {
-  if (animation_) {
-    int indice = random(1, 22);
-
+void animation(const char* text, int indice, int scrollDirection, int speed_) {
     P.setSpeed(speed_);
-    switch (indice) {
+
+    if (!unaVez) {
+      switch (indice) {
       case 1:
-        P.displayText(text, PA_LEFT, 50, 0, PA_PRINT & scrollDirection);
+        Serial.println("  -> PA_PRINT");
         break;
 
       case 2:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SCROLL_UP & scrollDirection);
+        Serial.println("  -> PA_SCROLL_UP");
         break;
 
       case 3:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SLICE & scrollDirection);
+        Serial.println("  -> PA_SLICE");
         break;
 
       case 4:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SCAN_HORIZ & scrollDirection);
+        Serial.println("  -> PA_SCAN_HORIZ");
         break;
 
       case 5:
-        P.displayText(text, PA_LEFT, 50, 0, PA_OPENING_CURSOR & scrollDirection);
+        Serial.println("  -> PA_OPENING_CURSOR");
         break;
 
       case 6:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SCROLL_DOWN_RIGHT & scrollDirection);
+        Serial.println("  -> PA_SCROLL_DOWN_RIGHT");
         break;
 
       case 7:
-        P.displayText(text, PA_LEFT, 50, 0, PA_WIPE & scrollDirection);
+        Serial.println("  -> PA_WIPE");
         break;
 
       case 8:
-        P.displayText(text, PA_LEFT, 50, 0, PA_GROW_UP & scrollDirection);
+        Serial.println("  -> PA_GROW_UP");
         break;
 
       case 9:
-        P.displayText(text, PA_LEFT, 50, 0, PA_CLOSING_CURSOR & scrollDirection);
+        Serial.println("  -> PA_CLOSING_CURSOR");
         break;
 
       case 10:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SCROLL_UP_LEFT & scrollDirection);
+        Serial.println("  -> PA_SCROLL_UP_LEFT");
         break;
 
       case 11:
-        P.displayText(text, PA_LEFT, 50, 0, PA_MESH & scrollDirection);
+        Serial.println("  -> PA_MESH");
         break;
 
       case 12:
-        P.displayText(text, PA_LEFT, 50, 0, PA_OPENING & scrollDirection);
+        Serial.println("  -> PA_OPENING");
         break;
 
       case 13:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SCROLL_UP_RIGHT & scrollDirection);
+        Serial.println("  -> PA_SCROLL_UP_RIGHT");
         break;
 
       case 14:
-        P.displayText(text, PA_LEFT, 50, 0, PA_BLINDS & scrollDirection);
+        Serial.println("  -> PA_BLINDS");
         break;
 
       case 15:
-        P.displayText(text, PA_LEFT, 50, 0, PA_DISSOLVE & scrollDirection);
+        Serial.println("  -> PA_DISSOLVE");
         break;
 
       case 16:
-        P.displayText(text, PA_LEFT, 50, 0, PA_CLOSING & scrollDirection);
+        Serial.println("  -> PA_CLOSING");
         break;
 
       case 17:
-        P.displayText(text, PA_LEFT, 50, 0, PA_RANDOM & scrollDirection);
+        Serial.println("  -> PA_RANDOM");
         break;
 
       case 18:
-        P.displayText(text, PA_LEFT, 50, 0, PA_WIPE_CURSOR & scrollDirection);
+        Serial.println("  -> PA_WIPE_CURSOR");
         break;
 
       case 19:
-        P.displayText(text, PA_LEFT, 50, 0, PA_GROW_DOWN & scrollDirection);
+        Serial.println("  -> PA_GROW_DOWN");
         break;
 
       case 20:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SCAN_VERT & scrollDirection);
+        Serial.println("  -> PA_SCAN_VERT");
         break;
 
       case 21:
-        P.displayText(text, PA_LEFT, 50, 0, PA_SCROLL_DOWN_LEFT & scrollDirection);
+        Serial.println("  -> PA_SCROLL_DOWN_LEFT");
+        break;
+
+      default:
+        break;
+      }
+      unaVez = true;
+    }
+    
+    switch (indice) {
+      case 1:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_PRINT);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 2:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_UP);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 3:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SLICE);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 4:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SCAN_HORIZ);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 5:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_OPENING_CURSOR);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 6:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_DOWN_RIGHT);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 7:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_WIPE);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 8:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_GROW_UP);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 9:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_CLOSING_CURSOR);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 10:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_UP_LEFT);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 11:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_MESH);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 12:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_OPENING);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 13:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_UP_RIGHT);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 14:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_BLINDS);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 15:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_DISSOLVE);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 16:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_CLOSING);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 17:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_RANDOM);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 18:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_WIPE_CURSOR);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 19:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_GROW_DOWN);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 20:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SCAN_VERT);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        break;
+
+      case 21:
+        P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_DOWN_LEFT);
+        while (!P.displayAnimate()) {}
+        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       default:
         break;
     }
-  }
 }
 // =======================================================
 
@@ -474,7 +621,9 @@ void Calculadora_() {
       P.displayReset();
       // P.print(curMessage);
       Serial.println("-> Mostrando Resultado");
+      unaVez = false;
       displayScrollingText(curMessage, switchState, switch2State, animationSpeed);
+      unaVez = false;
       input = "";
       resultado = 0.0;
        Serial.println("-> Esperando Operacion");
