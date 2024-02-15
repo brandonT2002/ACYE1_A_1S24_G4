@@ -445,128 +445,128 @@ void animation(const char* text, int indice, int scrollDirection, int speed_) {
     switch (indice) {
       case 1:
         P.displayText(text, PA_LEFT, speed_, 0, PA_PRINT);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 2:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_UP);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 3:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SLICE);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 4:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SCAN_HORIZ);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 5:
         P.displayText(text, PA_LEFT, speed_, 0, PA_OPENING_CURSOR);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 6:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_DOWN_RIGHT);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 7:
         P.displayText(text, PA_LEFT, speed_, 0, PA_WIPE);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 8:
         P.displayText(text, PA_LEFT, speed_, 0, PA_GROW_UP);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 9:
         P.displayText(text, PA_LEFT, speed_, 0, PA_CLOSING_CURSOR);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 10:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_UP_LEFT);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 11:
         P.displayText(text, PA_LEFT, speed_, 0, PA_MESH);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 12:
         P.displayText(text, PA_LEFT, speed_, 0, PA_OPENING);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 13:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_UP_RIGHT);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 14:
         P.displayText(text, PA_LEFT, speed_, 0, PA_BLINDS);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 15:
         P.displayText(text, PA_LEFT, speed_, 0, PA_DISSOLVE);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 16:
         P.displayText(text, PA_LEFT, speed_, 0, PA_CLOSING);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 17:
         P.displayText(text, PA_LEFT, speed_, 0, PA_RANDOM);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 18:
         P.displayText(text, PA_LEFT, speed_, 0, PA_WIPE_CURSOR);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 19:
         P.displayText(text, PA_LEFT, speed_, 0, PA_GROW_DOWN);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 20:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SCAN_VERT);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       case 21:
         P.displayText(text, PA_LEFT, speed_, 0, PA_SCROLL_DOWN_LEFT);
-        while (!P.displayAnimate()) {}
-        P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
+        //while (!P.displayAnimate()) {}
+        //P.displayText(text, PA_LEFT, speed_, 0, scrollDirection);
         break;
 
       default:
