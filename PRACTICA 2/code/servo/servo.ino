@@ -1,42 +1,76 @@
 #include <Servo.h>
 
-Servo myservo;
+// creadion del los objetos servo
+Servo myservo1;
+Servo myservo2;
+Servo myservo3;
+
+int deg = 45; // grados a abrir los servos
+
+// piner para los servos 
+int pinServo1 = 10;
+int pinServo2 = 11;
+int pinServo3 = 12;
 
 // Definir las variables para el control del tiempo
 unsigned long tiempoInicio1 = 0;
+unsigned long tiempoInicio2 = 0;
+unsigned long tiempoInicio3 = 0;
 const unsigned long tiempoDeseado = 2000; // Tiempo deseado en milisegundos (2 segundos)
 
-void servo(bool valor)
-{
-  if (valor)
-  { // Si el valor es verdadero, girar a 180 grados
-    myservo.write(180);
-    tiempoInicio1 = millis();
-  }
-  else
-  { // si el valor es falso, girar a 90 grados
-    myservo.write(90);
-    tiempoInicio1 = millis();
-  }
-
-  while (millis() - tiempoInicio1 < tiempoDeseado)
+void servo(int valor){
+  while (true)
   {
-    // Esperar hasta que se cumpla el tiempo deseado, no quitar 
+    // si valor = 1
+  if (valor == 1) {
+    myservo1.write(deg);
+    tiempoInicio1 = millis(); // Almacenar el tiempo actual
+    valor ++;
+  }
+  // Si han pasado 2 segundos desde que se presionó el botón 1, volver al estado inicial
+  if (millis() - tiempoInicio1 >= tiempoDeseado) {
+    myservo1.write(0);
+    return ;
   }
 
-  myservo.write(0); // regresar el servo en la posición 0
+  // si valor = 2
+  if (valor == 2) {
+    myservo2.write(deg);
+    tiempoInicio2 = millis(); // Almacenar el tiempo actual
+    valor ++;
+  }
+  // Si han pasado 2 segundos desde que se presionó el botón 2, volver al estado inicial
+  if (millis() - tiempoInicio2 >= tiempoDeseado) {
+    myservo2.write(0);
+    return ;
+  }
+
+
+  // si valor = 3
+  if (valor == 3) {
+    myservo3.write(deg);
+    tiempoInicio3 = millis(); // Almacenar el tiempo actual
+    valor ++;
+  }
+  // Si han pasado 2 segundos desde que se presionó el botón 2, volver al estado inicial
+  if (millis() - tiempoInicio3 >= tiempoDeseado) {
+    myservo2.write(0);
+    return ;
+  }
+  }
+  
 }
 
-void setup()
-{
-  myservo.attach(10); // pin donde se conecta cable naranja del servo
+void setup() {
+  myservo1.attach(pinServo1);
+  myservo2.attach(pinServo2);
+  myservo3.attach(pinServo3);
 
-  servo(true);  // Servo a 180 grados durante x segundos
 
-  servo(false); // Servo a 90 grados durante x segundos
-}
+  // se llama a la funcion servo con valor 1,2,3 para mover los respectivos servos.
+  servo(1);
+  }
 
-void loop()
-{
-  //sdfsd
+void loop() {
+  //BCSPN
 }
