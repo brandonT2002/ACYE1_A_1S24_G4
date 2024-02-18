@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <EEPROM.h>
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 #define up 3
@@ -17,7 +18,82 @@ bool inColorMenu = false;
 
 int numGrande = 0, numMediano = 0, numPeque = 0;
 
+// Metodo para guardar en la EEPROM
+void guardarValor(byte indice, byte valor) {
+  byte direccion;
+  switch (indice) {
+    case 0:
+      direccion = 0;
+      break;
+    case 1:
+      direccion = 1;
+      break;
+    case 2:
+      direccion = 2;
+      break;
+    case 3:
+      direccion = 3;
+      break;
+    case 4:
+      direccion = 4;
+      break;
+    case 5:
+      direccion = 5;
+      break;
+    default:
+      return;
+  }
+  EEPROM.write(direccion, valor);
+}
+
+// Función para leer un valor de la EEPROM
+String leerValor(byte indice) {
+  byte direccion;
+  switch (indice) {
+    case 0:
+      direccion = 0;
+      break;
+    case 1:
+      direccion = 1;
+      break;
+    case 2:
+      direccion = 2;
+      break;
+    case 3:
+      direccion = 3;
+      break;
+    case 4:
+      direccion = 4;
+      break;
+    case 5:
+      direccion = 5;
+      break;
+    default:
+      return "-1";
+  }
+  byte valor = EEPROM.read(direccion);
+  return String(valor);
+}
+
+// Metodo para borrar por completo la EEPROM
+void borrarEEPROM(){
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.write(i, 0);
+  }
+}
+
 void setup() {
+
+  borrarEEPROM(); // Funcion que borra la memoria EEPROM mejor dejarla para evitar tener valores guardados en la calificacion.
+
+  // funciones para guardar valores en la memoria temporalmente (mientras los sensores aun no funcionan)
+  guardarValor(0,10); // index 0 cajas color x
+  guardarValor(1,20); // index 1 cajas color y
+  guardarValor(2,30); // index 2 cajas color z
+  guardarValor(3,40); // index 3 cajas grandes
+  guardarValor(4,50); // index 4 cajas medianas
+  guardarValor(5,60); // index 5 cajas pequeñas 
+
   lcd.init();
   lcd.backlight();
   pinMode(up, INPUT_PULLUP);
@@ -252,27 +328,27 @@ void enterData() {
 void printSize() {
   if (dataI == 0 || dataI == 1) {
     lcd.setCursor(1, 0);
-    lcd.print("Cajas Grandes: ");
+    lcd.print("Grandes: " + leerValor(3));
     lcd.setCursor(1, 1);
-    lcd.print("Cajas Medianas: ");
+    lcd.print("Medianas: " + leerValor(4));
   } else {
     lcd.setCursor(1, 0);
-    lcd.print("Cajs Medianas: ");
+    lcd.print("Medianas: " + leerValor(4));
     lcd.setCursor(1, 1);
-    lcd.print("Cajas Pequenias: ");
+    lcd.print("Pequenias: " + leerValor(5));
   }
 }
 
 void printColor() {
   if (dataI == 0 || dataI == 1) {
     lcd.setCursor(1, 0);
-    lcd.print("Cajas Color X: ");
+    lcd.print("Color X: " + leerValor(0));
     lcd.setCursor(1, 1);
-    lcd.print("Cajas Color Y: ");
+    lcd.print("Color Y: " + leerValor(1));
   } else {
     lcd.setCursor(1, 0);
-    lcd.print("Cajs Color Y: ");
+    lcd.print("Color Y: " + leerValor(1));
     lcd.setCursor(1, 1);
-    lcd.print("Cajas Color Z: ");
+    lcd.print("Color Z: " + leerValor(2));
   }
 }
