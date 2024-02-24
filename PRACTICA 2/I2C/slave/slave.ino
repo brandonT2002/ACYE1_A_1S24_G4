@@ -214,8 +214,8 @@ void receiveEvent(int numBytes) {
     Serial.println("dentro del while");
     switch (numReceived) {
       case 1:
-        getColor();
-        break;
+        getCol  or();
+        break; 
       case 2:
         Serial.println("recibio 2");
         sensorTamano();

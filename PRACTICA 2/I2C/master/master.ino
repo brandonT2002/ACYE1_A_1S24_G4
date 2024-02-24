@@ -429,7 +429,8 @@ void loop() {
 
   Wire.beginTransmission(SLAVE_ADDRESS);  // Iniciar transmisión con el esclavo
   Serial.println("eererer");
-  Wire.write(2);
+  int numToSend = 2;
+  Wire.write(numToSend);
   if (!inSubMenu) {
     UPandDOWN();
   } else if (!inColorMenu) {
