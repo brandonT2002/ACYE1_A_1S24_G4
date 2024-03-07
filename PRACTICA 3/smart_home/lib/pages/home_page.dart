@@ -1,14 +1,27 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_home/util/smart_devices_box.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  // bluetooth
+  final _bluetooth = FlutterBluetoothSerial.instance;
+  bool _bluetoothState = false;
+  bool _isConnecting = false;
+  BluetoothConnection? _connection;
+  List<BluetoothDevice> _devices = [];
+  BluetoothDevice? _deviceConnected;
+  int times = 0;
+
   // padding constants
   final double horizontalPadding = 40;
   final double verticalPadding = 25;
@@ -34,26 +47,131 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Bluetooth"),
-          content: Text("Bluetooth settings go here."),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancelar"),
+        return Dialog(
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text("Bluetooth"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cancelar"),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                // Add functionality for "Buscar dispositivos" button here
-              },
-              child: Text("Ver dispositivos"),
+            body: Column(
+              children: [
+                _infoDevice(),
+                Expanded(child: _listDevices()),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
+  }
+
+  // ==============================
+  // ========= Bluetooth ==========
+
+  void _getDevices() async {
+    var res = await _bluetooth.getBondedDevices();
+    setState(() => _devices = res);
+  }
+
+  void _receiveData() {
+    _connection?.input?.listen((event) {
+      if (String.fromCharCodes(event) == "p") {
+        setState(() => times = times + 1);
+      }
+    });
+  }
+
+  void _sendData(String data) {
+    if (_connection?.isConnected ?? false) {
+      _connection?.output.add(ascii.encode(data));
+    }
+  }
+
+  void _requestPermission() async {
+    await Permission.location.request();
+    await Permission.bluetooth.request();
+    await Permission.bluetoothScan.request();
+    await Permission.bluetoothConnect.request();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _requestPermission();
+
+    _bluetooth.state.then((state) {
+      setState(() => _bluetoothState = state.isEnabled);
+    });
+
+    _bluetooth.onStateChanged().listen((state) {
+      setState(() => _bluetoothState = state.isEnabled);
+    });
+  }
+
+  Widget _infoDevice() {
+    return ListTile(
+      tileColor: Colors.black12,
+      title: Text("Conectado a: ${_deviceConnected?.name ?? "ninguno"}"),
+      trailing: _connection?.isConnected ?? false
+          ? TextButton(
+              onPressed: () async {
+                await _connection?.finish();
+                setState(() => _deviceConnected = null);
+              },
+              child: const Text("Desconectar"),
+            )
+          : TextButton(
+              onPressed: _getDevices,
+              child: const Text("Ver dispositivos"),
+            ),
+    );
+  }
+
+  Widget _listDevices() {
+    return _isConnecting
+        ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            child: Container(
+              color: Colors.grey.shade100,
+              child: Column(
+                children: [
+                  ...[
+                    for (final device in _devices)
+                      ListTile(
+                        title: Text(device.name ?? device.address),
+                        trailing: TextButton(
+                          child: const Text('conectar'),
+                          onPressed: () async {
+                            setState(() => _isConnecting = true);
+
+                            try {
+                              _connection = await BluetoothConnection.toAddress(device.address);
+                            } catch (e) {
+                              // print('===>>>>  Error de conexión: $e');
+                            }
+                            _deviceConnected = device;
+                            _devices = [];
+                            _isConnecting = false;
+
+                            _receiveData();
+
+                            setState(() {});
+                          },
+                        ),
+                      )
+                  ]
+                ],
+              ),
+            ),
+          );
   }
 
   @override
@@ -73,9 +191,9 @@ class _HomePageState extends State<HomePage> {
                   _showBluetoothDialog(context);
                 },
                 child: Icon(
-                  Icons.bluetooth,
+                  _bluetoothState ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
                   size: 40,
-                  color: Colors.grey[800],
+                  color: _bluetoothState ? Colors.green : Colors.grey[800],
                 ),
               ),
               Text(
