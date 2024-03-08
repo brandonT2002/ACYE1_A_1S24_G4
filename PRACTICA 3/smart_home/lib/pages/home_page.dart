@@ -29,10 +29,9 @@ class _HomePageState extends State<HomePage> {
   // list of smart devices
   List mySmartDevices = [
     // [ name, path, status ]
-    ["Hab. 1", "assets/light-bulb.png", false],
-    ["Hab. 1", "assets/fan.png", false],
-    ["Hab. 2", "assets/light-bulb.png", false],
-    ["Hab. 2", "assets/fan.png", false],
+    ["Luz 1", "assets/light-bulb.png", false],
+    ["Luz 2", "assets/light-bulb.png", false],
+    ["Luz 3", "assets/light-bulb.png", false],
   ];
 
   // power button switched
@@ -40,6 +39,11 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       mySmartDevices[index][2] = value;
     });
+    
+    // Calcular el valor a enviar basado en el índice y el patrón especificado
+    int valueToSend = index * 2 + (value ? 1 : 2); // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
+    String dataToSend = valueToSend.toString();
+    _sendData(dataToSend);
   }
 
   // Function to show Bluetooth dialog
@@ -47,27 +51,44 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Dialog(
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text("Bluetooth"),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Cancelar"),
-                ),
-              ],
+        if (_bluetoothState) {
+          // Si el Bluetooth está activado, mostrar la lista de dispositivos
+          return Dialog(
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text("Bluetooth"),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancelar"),
+                  ),
+                ],
+              ),
+              body: Column(
+                children: [
+                  _infoDevice(),
+                  Expanded(child: _listDevices()),
+                ],
+              ),
             ),
-            body: Column(
-              children: [
-                _infoDevice(),
-                Expanded(child: _listDevices()),
-              ],
-            ),
-          ),
-        );
+          );
+        } else {
+          // Si el Bluetooth está desactivado, mostrar un mensaje indicando que está apagado
+          return AlertDialog(
+            title: Text("Bluetooth"),
+            content: Text("Activa el Bluetooth para ver los dispositivos."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        }
       },
     );
   }

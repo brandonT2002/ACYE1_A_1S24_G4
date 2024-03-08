@@ -36,9 +36,9 @@ class SmartDeviceBox extends StatelessWidget {
             Image.asset(
               iconPath,
               height: 65,
-              color: powerOn ? Colors.white : Colors.black,
+              color: powerOn ? Colors.grey[200] : Colors.grey[900],
             ),
-      
+
             // smart device name + switch
             Row(
               children: [
