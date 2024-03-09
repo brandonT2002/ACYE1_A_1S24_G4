@@ -29,9 +29,12 @@ class _HomePageState extends State<HomePage> {
   // list of smart devices
   List mySmartDevices = [
     // [ name, path, status ]
-    ["Luz 1", "assets/light-bulb.png", false],
-    ["Luz 2", "assets/light-bulb.png", false],
-    ["Luz 3", "assets/light-bulb.png", false],
+    ["Cuarto 1", "assets/light-bulb.png", false],
+    ["Cuarto 2", "assets/light-bulb.png", false],
+    ["Baño", "assets/light-bulb.png", false],
+    ["Sala", "assets/light-bulb.png", false],
+    ["Cocina", "assets/light-bulb.png", false],
+    ["Jardín", "assets/light-bulb.png", false],
   ];
 
   // power button switched
@@ -254,13 +257,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            const SizedBox(height: 5),
+            const SizedBox(height: 30),
 
             // smart devices + grid
             Expanded(
               child: GridView.builder(
                 itemCount: mySmartDevices.length,
-                padding: const EdgeInsets.all(25),
+                padding: const EdgeInsets.all(5),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio: 1 / 1.3,

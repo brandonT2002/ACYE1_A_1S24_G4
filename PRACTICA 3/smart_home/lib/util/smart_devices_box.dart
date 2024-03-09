@@ -26,16 +26,16 @@ class SmartDeviceBox extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: powerOn ? Colors.grey[900] : Colors.grey[200],
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 25),
+        padding: const EdgeInsets.symmetric(vertical: 35),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // icon
             Image.asset(
               iconPath,
-              height: 65,
+              height: 80,
               color: powerOn ? Colors.grey[200] : Colors.grey[900],
             ),
 
