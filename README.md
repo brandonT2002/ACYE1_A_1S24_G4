@@ -1,4 +1,4 @@
-<h1 align="center">Practica 02</h1>
+<h1 align="center">Proyecto 01</h1>
 
 
 <div align="center">
@@ -17,7 +17,7 @@ Grupo #04
 
 <div align="center" style="display:flex;justify-content:center;gap:20px">
  <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=arduino,git" />
+    <img src="https://skillicons.dev/icons?i=arduino,git,flutter" />
   </a>
 </div>
 <ul>
