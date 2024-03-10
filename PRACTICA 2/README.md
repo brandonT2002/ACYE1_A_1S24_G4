@@ -56,6 +56,10 @@ void loop() {
 
 Este se encarga de detener todos los procesos en cualquier momento regresando asi a un punto inicial en el que es necesario reiniciar el sistema.
 ```c++
+void paradaEmergencia() {
+  Serial.println("se realizo una parada de emergencia.");
+  delay(30000);
+}
 ```
 
 **Filtro**
@@ -114,9 +118,16 @@ void loop() {
 }
 ```
 
+# 📍 Manual Usuario
+El usuario Deberá acceder a un sistema de administración de la banda y podrá seleccionar la funcionalidad que se requiera.
 
+<p align="center">
+    <img src="Img/img1.jpeg" width="350px">
+</p>
 
+Luego de haber accedido al menú principal se verá la funcionalidad de separación de cajas por tamaño o color.
 
-
-
-
+<p align="center">
+    <img src="Img/img2.jpeg" width="350px">
+    <img src="Img/img3.jpeg" width="350px">
+</p>
