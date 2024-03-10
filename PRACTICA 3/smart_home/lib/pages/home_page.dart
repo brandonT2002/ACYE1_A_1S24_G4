@@ -97,6 +97,29 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ==============================
+  // ======== Temperatura =========
+
+  Widget _buildTemperatureWidget() {
+    // Aquí puedes personalizar cómo mostrar la temperatura ambiente
+    // Esto puede ser un Text, un Icon, una combinación de ambos, etc.
+    // Por ejemplo, aquí hay un Text simple:
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.thermostat),
+          SizedBox(width: 10),
+          Text(
+            'Temperatura: 25°C', // Puedes cambiar esto con la temperatura real
+            style: TextStyle(fontSize: 20),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==============================
   // ========= Bluetooth ==========
 
   void _getDevices() async {
@@ -206,7 +229,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.grey[300],
         elevation: 0,
         title: Padding(
-          padding: EdgeInsets.only(right: 20), // Ajusta el espacio entre el texto y el borde derecho
+          padding: EdgeInsets.only(right: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -256,6 +279,9 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+
+            // Widget para mostrar la temperatura ambiente
+            _buildTemperatureWidget(),
 
             const SizedBox(height: 30),
 
