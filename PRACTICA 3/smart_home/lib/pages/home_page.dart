@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   List<BluetoothDevice> _devices = [];
   BluetoothDevice? _deviceConnected;
   int times = 0;
+  int _currentIndex = 0;
 
   // padding constants
   final double horizontalPadding = 40;
@@ -285,25 +287,66 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 30),
 
-            // smart devices + grid
+            // smart devices + carousel
             Expanded(
-              child: GridView.builder(
-                itemCount: mySmartDevices.length,
-                padding: const EdgeInsets.all(5),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1 / 1.3,
-                ),
-                itemBuilder: (context, index) {
-                  return SmartDeviceBox(
-                    smartDeviceName: mySmartDevices[index][0],
-                    iconPath: mySmartDevices[index][1],
-                    powerOn: mySmartDevices[index][2],
-                    onChanged: (value) => powerSwitchChanged(value, index),
-                  );
-                },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  ),
+                  CarouselSlider(
+                    options: CarouselOptions(
+                      height: 255.0,
+                      initialPage: _currentIndex,
+                      enlargeCenterPage: true,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      // Establecer límites para que el carrusel no pueda ir más allá del primer o último elemento
+                      aspectRatio: 16 / 9,
+                      viewportFraction: 0.75,
+                      enableInfiniteScroll: true,
+                    ),
+                    items: mySmartDevices.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      List smartDevice = entry.value;
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 5.0), // Ajusta el margen horizontal aquí
+                            child: SmartDeviceBox(
+                              smartDeviceName: smartDevice[0],
+                              iconPath: smartDevice[1],
+                              powerOn: smartDevice[2],
+                              onChanged: (value) => powerSwitchChanged(value, index),
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 5.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: mySmartDevices.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      return Container(
+                        width: 8.0,
+                        height: 8.0,
+                        margin: EdgeInsets.symmetric(horizontal: 2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentIndex == index ? Colors.blue : Colors.grey,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ),
-            )
+            ),
           ],
         ),
       ),

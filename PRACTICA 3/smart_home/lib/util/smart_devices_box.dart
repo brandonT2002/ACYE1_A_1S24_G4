@@ -12,12 +12,12 @@ class SmartDeviceBox extends StatelessWidget {
   void Function(bool)? onChanged;
 
   SmartDeviceBox({
-    super.key,
+    Key? key,
     required this.smartDeviceName,
     required this.iconPath,
     required this.powerOn,
-    required this.onChanged
-  });
+    required this.onChanged,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class SmartDeviceBox extends StatelessWidget {
             // icon
             Image.asset(
               iconPath,
-              height: 80,
+              height: 70,
               color: powerOn ? Colors.grey[200] : Colors.grey[900],
             ),
 
@@ -49,19 +49,23 @@ class SmartDeviceBox extends StatelessWidget {
                       smartDeviceName,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: 25,
                         color: powerOn ? Colors.white : Colors.black,
                       ),
                     ),
                   ),
                 ),
-                Transform.rotate(
-                  angle: pi / 2,
-                  child: CupertinoSwitch(
-                    value: powerOn, 
-                    onChanged: onChanged,
+                SizedBox(width: 10), // Agregar un espacio entre el texto y el switch
+                Container( // Contenedor para aplicar margen al switch
+                  margin: EdgeInsets.only(right: 25.0), // Margen en el lado derecho del switch
+                  child: Transform.rotate(
+                    angle: pi,
+                    child: CupertinoSwitch(
+                      value: powerOn, 
+                      onChanged: onChanged,
+                    ),
                   ),
-                )
+                ),
               ],
             )
           ],
