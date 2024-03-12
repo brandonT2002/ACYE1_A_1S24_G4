@@ -29,7 +29,7 @@ Grupo #04
   <li>Proteus</li>
   <li>Librerías</li>
   <ul>
-	<li>Stepper</li>
+	<li>LCD</li>
   <li>Servo</li>
   <li>SoftwareSerial</li>
   </ul>
