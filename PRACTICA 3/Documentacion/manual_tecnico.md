@@ -35,15 +35,14 @@ Grupo #04
 -  sensorHSuelo(): Mide la humedad del suelo y controla la bomba de agua según el nivel de humedad.
 -  hallSensor(): Controla la posición del servomotor basándose en la detección de campos magnéticos.
 -  Bluetooth(): Gestiona la comunicación Bluetooth y ejecuta acciones según los comandos recibidos.
--  Control de Luces:
+-  Control de Luces: Se controlan seis luces LED (pines ledPin1 a ledPin6) mediante comandos Bluetooth desde '1' hasta '6'. 'E' enciende todas las luces, 'A' apaga   todas las luces.
 
-- Se controlan seis luces LED (pines ledPin1 a ledPin6) mediante comandos Bluetooth desde '1' hasta '6'. 'E' enciende todas las luces, 'A' apaga todas las luces.
-Configuración y Conexiones:
+#### Configuración y Conexiones:
 
 - Configuración del sensor de efecto Hall, el servomotor, las luces LED, la bomba de agua y la comunicación Bluetooth.
 Bucle Principal:
 
-- El bucle principal ( loop() ) realiza lecturas de sensores, controla actuadores, maneja la comunicación Bluetooth y espera 1 segundo entre mediciones.
+- El bucle principal ( loop() ): realiza lecturas de sensores, controla actuadores, maneja la comunicación Bluetooth y espera 1 segundo entre mediciones.
 
 ---
 
