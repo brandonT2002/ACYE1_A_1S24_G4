@@ -31,24 +31,43 @@ class _HomePageState extends State<HomePage> {
   // list of smart devices
   List mySmartDevices = [
     // [ name, path, status ]
+    ["Todo",     "assets/light-bulb.png", false],
     ["Cuarto 1", "assets/light-bulb.png", false],
     ["Cuarto 2", "assets/light-bulb.png", false],
-    ["Baño", "assets/light-bulb.png", false],
-    ["Sala", "assets/light-bulb.png", false],
-    ["Cocina", "assets/light-bulb.png", false],
-    ["Jardín", "assets/light-bulb.png", false],
+    ["Baño",     "assets/light-bulb.png", false],
+    ["Sala",     "assets/light-bulb.png", false],
+    ["Comedor",  "assets/light-bulb.png", false],
+    ["Jardín",   "assets/light-bulb.png", false],
   ];
 
   // power button switched
   void powerSwitchChanged(bool value, int index) {
     setState(() {
-      mySmartDevices[index][2] = value;
+      if (index == 0) {
+        // Si el switch "Todo" cambia, cambiar todos los switches
+        for (int i = 0; i < mySmartDevices.length; i++) {
+          mySmartDevices[i][2] = value;
+        }
+      } else {
+        // Si se cambia otro switch, actualizar solo ese switch
+        mySmartDevices[index][2] = value;
+        // Si el switch no es el "Todo" y se desactiva, desactivar también el switch "Todo"
+        if (!value) {
+          mySmartDevices[0][2] = false;
+        }
+      }
     });
-    
-    // Calcular el valor a enviar basado en el índice y el patrón especificado
-    int valueToSend = index * 2 + (value ? 1 : 2); // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
-    String dataToSend = valueToSend.toString();
-    _sendData(dataToSend);
+
+    // Enviar datos solo si el switch "Todo" cambia
+    if (index == 0) {
+      // Calcular el valor a enviar basado en el índice y el patrón especificado
+      int valueToSend = value ? 1 : 2; // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
+      String dataToSend = valueToSend.toString();
+      _sendData(dataToSend);
+    }
+
+    // Actualizar el estado del widget
+    setState(() {});
   }
 
   // Function to show Bluetooth dialog
