@@ -29,7 +29,7 @@ Grupo #04
   <li>Proteus</li>
   <li>Librerías</li>
   <ul>
-	<li>Stepper</li>
+	<li>LCD</li>
   <li>Servo</li>
   <li>SoftwareSerial</li>
   </ul>
@@ -40,20 +40,20 @@ Sistema Iot para controlar y monitorear diferentes servicios de una vivienda mod
 
 1. Se necesitar tener instalada la app en el dispositivo movil.
    
-<img src="./imagenes/1.JPEG" width="400">
+![IMAGEN1](./imagenes/1.JPEG)
 
 1. Emparejar el dispositivo al sensor , este proceso asegura que ambos dispositivos esten autorizados para cambiar datos.
    
-<img src="./imagenes/3.JPEG" width="400">
+![IMAGEN1](./imagenes/3.JPEG)
 
 1. Una vez que la conexión Bluetooth está establecida, el celular y el sensor pueden comenzar a intercambiar datos para el funcionamiento.
    
-<img src="./imagenes/4.JPEG" width="400">
+![IMAGEN1](./imagenes/4.JPEG)
 
 1. La vivienda incorpora una sofisticada instalacion de sensores Estos dispositivos inteligentes permiten la captura de datos en tiempo real, proporcionando a los habitantes un control sin precedentes sobre el entorno doméstico.
 
-<img src="./imagenes/5.JPEG" width="400">
+![IMAGEN1](./imagenes/5.JPEG)
+![IMAGEN1](./imagenes/6.JPEG)
 
-<img src="./imagenes/6.JPEG" width="400">
 
 ---
