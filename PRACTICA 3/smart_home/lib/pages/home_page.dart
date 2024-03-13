@@ -6,6 +6,9 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_home/util/smart_devices_box.dart';
 
+import '../util/card.dart';
+import '../util/segmentButton.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -27,7 +30,8 @@ class _HomePageState extends State<HomePage> {
   // padding constants
   final double horizontalPadding = 40;
   final double verticalPadding = 25;
-
+  List<bool> selectedWeatherValues = [true, false]; // Define la lista de seleccionados
+ // ToggleButtonsSample toggleButtonsSample = ToggleButtonsSample(selectedWeather: []);
   // list of smart devices
   List mySmartDevices = [
     // [ name, path, status ]
@@ -40,6 +44,23 @@ class _HomePageState extends State<HomePage> {
     ["Jardín",   "assets/light-bulb.png", false],
   ];
 
+  List extras = [
+    // [ name, path, status ]
+    ["Humedad", "assets/humidity.png", "2"],
+    ["Propano", "assets/Propane.png", "11"],
+  ];
+  String weather = 'No se ha seleccionado el clima';
+  final ValueNotifier<List<bool>> selectedWeather = ValueNotifier([true, false]);
+
+
+
+  void _updateWeather() {
+    // Aquí puedes actualizar la UI de acuerdo al estado de selectedWeather
+    setState(() {
+      int selectedIndex = selectedWeather.value.indexOf(true);
+      weather = selectedIndex == 0 ? 'Auto' : 'Manual';
+    });
+  }
   // power button switched
   void powerSwitchChanged(bool value, int index) {
     setState(() {
@@ -132,7 +153,8 @@ class _HomePageState extends State<HomePage> {
           Icon(Icons.thermostat),
           SizedBox(width: 10),
           Text(
-            'Temperatura: 25°C', // Puedes cambiar esto con la temperatura real
+            //'$weather', // Puedes cambiar esto con la temperatura real
+            "Temperatura: 25°C",
             style: TextStyle(fontSize: 20),
           ),
         ],
@@ -172,7 +194,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+    selectedWeather.addListener(_updateWeather);
     _requestPermission();
 
     _bluetooth.state.then((state) {
@@ -182,6 +204,12 @@ class _HomePageState extends State<HomePage> {
     _bluetooth.onStateChanged().listen((state) {
       setState(() => _bluetoothState = state.isEnabled);
     });
+  }
+
+  @override
+  void dispose() {
+    selectedWeather.removeListener(_updateWeather);
+    super.dispose();
   }
 
   Widget _infoDevice() {
@@ -264,12 +292,14 @@ class _HomePageState extends State<HomePage> {
                   color: _bluetoothState ? Colors.green : Colors.grey[800],
                 ),
               ),
-              Text(
-                " - ",
-                style: TextStyle(
-                  fontSize: 25,
-                  color: Colors.black,
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(20),
                 ),
+                height: 50,
+                width: 100,
+                child:  ToggleButtonsSample(selectedWeather: selectedWeather),
               ),
             ],
           ),
@@ -340,7 +370,7 @@ class _HomePageState extends State<HomePage> {
                               smartDeviceName: smartDevice[0],
                               iconPath: smartDevice[1],
                               powerOn: smartDevice[2],
-                              onChanged: (value) => powerSwitchChanged(value, index),
+                              onChanged: weather  == "Auto" ? null : (value) => powerSwitchChanged(value, index),
                             ),
                           );
                         },
@@ -363,6 +393,26 @@ class _HomePageState extends State<HomePage> {
                       );
                     }).toList(),
                   ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: GridView.builder(
+                      itemCount: 2,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1 / 1,
+                      ),
+
+                      itemBuilder: (context, index) {
+                        return CardExample(
+                          titleCard: extras[index][0],
+                          iconPath:  extras[index][1],
+                          value:  extras[index][2],
+                        );
+                      },
+                    ),
+                  )
                 ],
               ),
             ),

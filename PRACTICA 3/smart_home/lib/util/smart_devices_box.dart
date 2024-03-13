@@ -63,6 +63,7 @@ class SmartDeviceBox extends StatelessWidget {
                     child: CupertinoSwitch(
                       value: powerOn, 
                       onChanged: onChanged,
+
                     ),
                   ),
                 ),
