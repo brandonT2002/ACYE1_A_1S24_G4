@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:smart_home/util/CardH.dart';
 import 'package:smart_home/util/smart_devices_box.dart';
 
 import '../util/card.dart';
@@ -51,8 +52,6 @@ class _HomePageState extends State<HomePage> {
   ];
   String weather = 'No se ha seleccionado el clima';
   final ValueNotifier<List<bool>> selectedWeather = ValueNotifier([true, false]);
-
-
 
   void _updateWeather() {
     // Aquí puedes actualizar la UI de acuerdo al estado de selectedWeather
@@ -204,6 +203,7 @@ class _HomePageState extends State<HomePage> {
     _bluetooth.onStateChanged().listen((state) {
       setState(() => _bluetoothState = state.isEnabled);
     });
+    _updateWeather();
   }
 
   @override
@@ -289,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                 child: Icon(
                   _bluetoothState ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
                   size: 40,
-                  color: _bluetoothState ? Colors.green : Colors.grey[800],
+                  color: _bluetoothState ? Colors.blue[600] : Colors.grey[800],
                 ),
               ),
               Container(
@@ -370,7 +370,8 @@ class _HomePageState extends State<HomePage> {
                               smartDeviceName: smartDevice[0],
                               iconPath: smartDevice[1],
                               powerOn: smartDevice[2],
-                              onChanged: weather  == "Auto" ? null : (value) => powerSwitchChanged(value, index),
+                              onChanged: (value) => powerSwitchChanged(value, index),
+                              disabled: (index == 0 || index == 4 || index == 5 || index == 6) && weather == "Auto",
                             ),
                           );
                         },
@@ -393,7 +394,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: GridView.builder(
                       itemCount: 2,
@@ -412,7 +413,27 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                     ),
-                  )
+                  ),
+
+                  Expanded(
+                    child: GridView.builder(
+                      itemCount: 1,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        childAspectRatio: 1 / 0.35,
+                      ),
+
+                      itemBuilder: (context, index) {
+                        return CardHorizontal(
+                          titleCard: "ttest",
+                          iconPath:  "assets/door.png",
+                          value:  "Abierto",
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
