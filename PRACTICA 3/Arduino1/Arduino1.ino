@@ -1,5 +1,10 @@
 #include <SoftwareSerial.h>
-#include <Servo.h>
+#include <DHT.h>
+
+#define DHTPIN 2       // Pin al que está conectado el sensor DHT11
+#define DHTTYPE DHT11  // Tipo de sensor DHT que estás usando
+
+DHT dht(DHTPIN, DHTTYPE);
 
 // Define los pines de los LEDs
 const int ledPin1 = 3;
@@ -13,6 +18,22 @@ const int bluetoothRx = 11;
 // Inicializa la biblioteca SoftwareSerial para la comunicación Bluetooth
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
 
+void sensorDHT11() {
+  float h = dht.readHumidity();     // Lee la humedad relativa
+  float t = dht.readTemperature();  // Lee la temperatura en grados Celsius
+
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Error al leer del sensor DHT");
+    return;
+  }
+  // aqui se agrega para enviar por Bluetooth los datos en lugar de solo imprimirlos en consola.
+  Serial.print("Humedad: ");
+  Serial.print(h);
+  Serial.print("%\t");
+  Serial.print("Temperatura: ");
+  Serial.print(t);
+  Serial.println("°C");
+}
 
 void Bluetooth() {
   // Comprueba si hay datos disponibles para leer desde el Bluetooth
@@ -46,9 +67,11 @@ void setup() {
   // Inicia la comunicación serial para el Bluetooth a 9600 baudios
   bluetooth.begin(9600);
   Serial.begin(9600);
+  dht.begin();
 }
 
 void loop() {
+  sensorDHT11(); // sensor de humedad y temperatura de la casa
   Bluetooth(); // se reciben datos por Bluetooth 
   delay(1000);  // Espera 1 segundos entre mediciones
 }
