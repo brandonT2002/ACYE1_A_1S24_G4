@@ -77,11 +77,16 @@ class _HomePageState extends State<HomePage> {
         }
       }
     });
-
-    // Enviar datos solo si el switch "Todo" cambia
+    
     if (index == 0) {
+      for (int i = 1; i < mySmartDevices.length; i++) {
+        // Calcular el valor a enviar basado en el índice y el patrón especificado
+        String dataToSend = i.toString();
+        _sendData(dataToSend);
+      }
+    } else {
       // Calcular el valor a enviar basado en el índice y el patrón especificado
-      int valueToSend = value ? 1 : 2; // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
+      int valueToSend = index; // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
       String dataToSend = valueToSend.toString();
       _sendData(dataToSend);
     }
