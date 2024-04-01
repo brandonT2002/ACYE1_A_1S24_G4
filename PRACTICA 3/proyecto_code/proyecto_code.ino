@@ -11,6 +11,9 @@ int SENSOR = 6;
 
 DHT dht(DHTPIN, DHTTYPE);
 
+const int segmentPinsDisplay1[4] = { 22, 23, 24, 25 };  // A, B, C, D para el primer display
+const int segmentPinsDisplay2[4] = { 26, 27, 28, 29 };  // A, B, C, D para el segundo display
+
 const int sensorPin = A0;  // Pin analógico al que está conectado el sensor de humedad de suelo
 int sensorValue = 0;       // Variable para almacenar el valor leído del sensor
 int mq2 = A9;
@@ -154,6 +157,139 @@ void sensorDHT11() {
     cambiarEstado(VENTILADORES_OFF);
   }
   Serial.println("°C");
+
+  // Redondear y convertir a entero, limitando a 2 dígitos
+  int tempInt = min(abs(round(t)), 99);
+
+  // Separar los dígitos
+  int decenas = tempInt / 10;
+  int unidades = tempInt % 10;
+
+    switch (unidades) {
+    case 0:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], LOW);
+      digitalWrite(segmentPinsDisplay1[2], LOW);
+      digitalWrite(segmentPinsDisplay1[3], LOW);
+      break;
+    case 1:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], LOW);
+      digitalWrite(segmentPinsDisplay1[2], LOW);
+      digitalWrite(segmentPinsDisplay1[3], HIGH);
+      break;
+    case 2:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], LOW);
+      digitalWrite(segmentPinsDisplay1[2], HIGH);
+      digitalWrite(segmentPinsDisplay1[3], LOW);
+      break;
+    case 3:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], LOW);
+      digitalWrite(segmentPinsDisplay1[2], HIGH);
+      digitalWrite(segmentPinsDisplay1[3], HIGH);
+      break;
+    case 4:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], HIGH);
+      digitalWrite(segmentPinsDisplay1[2], LOW);
+      digitalWrite(segmentPinsDisplay1[3], LOW);
+      break;
+    case 5:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], HIGH);
+      digitalWrite(segmentPinsDisplay1[2], LOW);
+      digitalWrite(segmentPinsDisplay1[3], HIGH);
+      break;
+    case 6:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], HIGH);
+      digitalWrite(segmentPinsDisplay1[2], HIGH);
+      digitalWrite(segmentPinsDisplay1[3], LOW);
+      break;
+    case 7:
+      digitalWrite(segmentPinsDisplay1[0], LOW);
+      digitalWrite(segmentPinsDisplay1[1], HIGH);
+      digitalWrite(segmentPinsDisplay1[2], HIGH);
+      digitalWrite(segmentPinsDisplay1[3], HIGH);
+      break;
+    case 8:
+      digitalWrite(segmentPinsDisplay1[0], HIGH);
+      digitalWrite(segmentPinsDisplay1[1], LOW);
+      digitalWrite(segmentPinsDisplay1[2], LOW);
+      digitalWrite(segmentPinsDisplay1[3], LOW);
+      break;
+    case 9:
+      digitalWrite(segmentPinsDisplay1[0], HIGH);
+      digitalWrite(segmentPinsDisplay1[1], LOW);
+      digitalWrite(segmentPinsDisplay1[2], LOW);
+      digitalWrite(segmentPinsDisplay1[3], HIGH);
+      break;
+  }
+
+  switch (decenas) {
+    case 0:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], LOW);
+      digitalWrite(segmentPinsDisplay2[2], LOW);
+      digitalWrite(segmentPinsDisplay2[3], LOW);
+      break;
+    case 1:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], LOW);
+      digitalWrite(segmentPinsDisplay2[2], LOW);
+      digitalWrite(segmentPinsDisplay2[3], HIGH);
+      break;
+    case 2:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], LOW);
+      digitalWrite(segmentPinsDisplay2[2], HIGH);
+      digitalWrite(segmentPinsDisplay2[3], LOW);
+      break;
+    case 3:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], LOW);
+      digitalWrite(segmentPinsDisplay2[2], HIGH);
+      digitalWrite(segmentPinsDisplay2[3], HIGH);
+      break;
+    case 4:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], HIGH);
+      digitalWrite(segmentPinsDisplay2[2], LOW);
+      digitalWrite(segmentPinsDisplay2[3], LOW);
+      break;
+    case 5:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], HIGH);
+      digitalWrite(segmentPinsDisplay2[2], LOW);
+      digitalWrite(segmentPinsDisplay2[3], HIGH);
+      break;
+    case 6:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], HIGH);
+      digitalWrite(segmentPinsDisplay2[2], HIGH);
+      digitalWrite(segmentPinsDisplay2[3], LOW);
+      break;
+    case 7:
+      digitalWrite(segmentPinsDisplay2[0], LOW);
+      digitalWrite(segmentPinsDisplay2[1], HIGH);
+      digitalWrite(segmentPinsDisplay2[2], HIGH);
+      digitalWrite(segmentPinsDisplay2[3], HIGH);
+      break;
+    case 8:
+      digitalWrite(segmentPinsDisplay2[0], HIGH);
+      digitalWrite(segmentPinsDisplay2[1], LOW);
+      digitalWrite(segmentPinsDisplay2[2], LOW);
+      digitalWrite(segmentPinsDisplay2[3], LOW);
+      break;
+    case 9:
+      digitalWrite(segmentPinsDisplay2[0], HIGH);
+      digitalWrite(segmentPinsDisplay2[1], LOW);
+      digitalWrite(segmentPinsDisplay2[2], LOW);
+      digitalWrite(segmentPinsDisplay2[3], HIGH);
+      break;
+  }
 }
 
 void Bluetooth() {
@@ -239,6 +375,18 @@ void setup() {
   pinMode(ledPin2, OUTPUT);
   pinMode(ledPin3, OUTPUT);
   pinMode(bombAguaPin, OUTPUT);
+
+  // Configura el pin del sensor de humedad de suelo como salida
+  pinMode(segmentPinsDisplay1[0], OUTPUT);  //A
+  pinMode(segmentPinsDisplay1[1], OUTPUT);  //B
+  pinMode(segmentPinsDisplay1[2], OUTPUT);  //C
+  pinMode(segmentPinsDisplay1[3], OUTPUT);  //D
+
+
+  pinMode(segmentPinsDisplay2[0], OUTPUT);  //A
+  pinMode(segmentPinsDisplay2[1], OUTPUT);  //B
+  pinMode(segmentPinsDisplay2[2], OUTPUT);  //C
+  pinMode(segmentPinsDisplay2[3], OUTPUT);  //D
   // Inicia la comunicación serial para el Bluetooth a 9600 baudios
   bluetooth.begin(9600);
   Serial.begin(9600);
