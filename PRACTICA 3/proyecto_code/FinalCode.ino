@@ -7,13 +7,16 @@ const int ledPin3 = 50;
 const int ledPin4 = 51;
 const int ledPin5 = 52;
 const int ledPin6 = 53;
-
+char modeLight = 'N';
 // Configura los pines RX y TX del módulo Bluetooth
 const int bluetoothTx = 10;
 const int bluetoothRx = 11;
 int SENSOR = 6;
 int VALOR; 
 bool selecOp, selecMode;
+
+const int segmentPinsDisplay1[4] = { 22, 23, 24, 25 };  // A, B, C, D para el primer display
+const int segmentPinsDisplay2[4] = { 26, 27, 28, 29 };  // A, B, C, D para el segundo display
 
 // Inicializa la biblioteca SoftwareSerial para la comunicación Bluetooth
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
@@ -28,7 +31,7 @@ void encendidoAutomatico() {
     digitalWrite(ledPin2, LOW);  // Enciende el LED
     digitalWrite(ledPin3, LOW);  // Enciende el LED
 
-    delay(100);  // Espera 1 segundo
+    delay(10);  // Espera 1 segundo
   } else {
     // cambiarEstado(ILUMINACION_ON);
     digitalWrite(ledPin1, HIGH);  // Enciende el LED
@@ -36,50 +39,46 @@ void encendidoAutomatico() {
     digitalWrite(ledPin3, HIGH);  // Enciende el LED
   }
 }
+
  
 void encendidoManual() {
   // cambiarEstado(ILUMINACION_MANUAL);
-  if (selecMode == 0) {
-    digitalWrite(ledPin1, HIGH);
-  } else {
-    digitalWrite(ledPin1, LOW);
-  }
-}
-
-
-void iluminacion() {
-  //Serial.println(selecOp);
-  if (selecOp != 0) {
-    encendidoAutomatico();
-  }
-  delay(100);
-}
-
-void Bluetooth() {
-  // Comprueba si hay datos disponibles para leer desde el Bluetooth
-  if (bluetooth.available()) {
-    selecOp = 1;
-    char receivedChar = bluetooth.read();  // Lee el carácter recibido
-
-    // Enciende o apaga el LED correspondiente según el carácter recibido
-   switch (receivedChar) {
+  switch (modeLight) {
       case '1':
-        digitalWrite(ledPin1, !digitalRead(ledPin1));
+        digitalWrite(ledPin1, HIGH);
         break;
       case '2':
-        digitalWrite(ledPin2, !digitalRead(ledPin2));
+        digitalWrite(ledPin2, HIGH);
         break;
       case '3':
-        digitalWrite(ledPin3, !digitalRead(ledPin3));
+        digitalWrite(ledPin3, HIGH);
         break;
-        case '4':
-        digitalWrite(ledPin4, !digitalRead(ledPin4));
+      case '4':
+        digitalWrite(ledPin4, HIGH);
         break;
         case '5':
-        digitalWrite(ledPin5, !digitalRead(ledPin5));
+        digitalWrite(ledPin5, HIGH);
         break;
         case '6':
-        digitalWrite(ledPin6, !digitalRead(ledPin6));
+        digitalWrite(ledPin6, HIGH);
+        break;
+        case '7':
+        digitalWrite(ledPin1, LOW);
+        break;
+        case '8':
+        digitalWrite(ledPin2, LOW);
+        break;
+        case '9':
+        digitalWrite(ledPin3, LOW);
+        break;
+        case 'A':
+        digitalWrite(ledPin4, LOW);
+        break;
+        case 'B':
+        digitalWrite(ledPin5, LOW);
+        break;
+        case 'C':
+        digitalWrite(ledPin6, LOW);
         break;
       case 'E':
         // Enciende todas las luces
@@ -90,20 +89,42 @@ void Bluetooth() {
         digitalWrite(ledPin5, HIGH);
         digitalWrite(ledPin6, HIGH);
         break;
-      case 'A':
-        // Apaga todas las luces
-        digitalWrite(ledPin1, LOW);
-        digitalWrite(ledPin2, LOW);
-        digitalWrite(ledPin3, LOW);
-        digitalWrite(ledPin4, LOW);
-        digitalWrite(ledPin5, LOW);
-        digitalWrite(ledPin6, LOW);
-        break;
       default:
         // No hace nada si se recibe un carácter no reconocido
         break;
     }
   }
+
+
+
+void iluminacion() {
+  //Serial.println(selecOp);
+  if (selecOp == 0) {
+    encendidoManual();
+  } else {
+    encendidoAutomatico();
+  }
+  delay(10);
+}
+
+void Bluetooth() {
+  // Comprueba si hay datos disponibles para leer desde el Bluetooth
+  if (bluetooth.available()) {
+    char receivedChar = bluetooth.read();  // Lee el carácter recibido
+    Serial.println(receivedChar);
+    // Enciende o apaga el LED correspondiente según el carácter recibido
+   switch (receivedChar) {
+      case 'S':
+        selecOp=1;
+        break;
+      case 'M':
+        selecOp = 0;
+        break;
+      default:
+        modeLight = receivedChar;
+        break;
+  }
+}
 }
 
 void setup() {
@@ -114,7 +135,7 @@ void setup() {
   pinMode(ledPin4, OUTPUT);
   pinMode(ledPin5, OUTPUT);
   pinMode(ledPin6, OUTPUT);
-iluminacion();
+  selecOp= 1;
   // Inicia la comunicación serial para el Bluetooth a 9600 baudios
   bluetooth.begin(9600);
   Serial.begin(9600);
@@ -122,6 +143,6 @@ iluminacion();
 
 void loop() {
   VALOR = digitalRead(SENSOR); 
-   selecOp = 1;
   Bluetooth();
+  iluminacion();
 }
