@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
       int selectedIndex = selectedWeather.value.indexOf(true);
       weather = selectedIndex == 0 ? 'S' : 'M';
      // String valor = selectedIndex == 0 ? 'S' : 'N' ;
-      //_sendData(weather);
+      _sendData(weather);
     });
   }
   // power button switched
@@ -82,11 +82,17 @@ class _HomePageState extends State<HomePage> {
     
     if (index == 0) {
       print(mySmartDevices[index][2]);
-      for (int i = 1; i < mySmartDevices.length; i++) {
+      for (int i = 1; i < mySmartDevices.length+1; i++) {
         // Calcular el valor a enviar basado en el índice y el patrón especificado
         if(!mySmartDevices[index][2]){
-          int valueToSend = i+ 6 ;
-          String dataToSend = valueToSend.toString();
+          int valueToSend = i+ 5 ;
+          String dataToSend = "";
+          if (valueToSend >= 10){
+            valueToSend +=55;
+            dataToSend = String.fromCharCode(valueToSend);
+          }else{
+            dataToSend = valueToSend.toString();
+          }
           _sendData(dataToSend);
         }else{
           String dataToSend = i.toString();
@@ -99,8 +105,14 @@ class _HomePageState extends State<HomePage> {
       //print(mySmartDevices[index][2]);
       //print(index);
       if(!mySmartDevices[index][2]){
-        int valueToSend = index + 6; // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
-        String dataToSend = valueToSend.toString();
+        int valueToSend = index + 6; // Si el interruptor está activado, se suma 1, de lo contrario se suma
+        String dataToSend = "";
+        if (valueToSend >= 10){
+          valueToSend +=55;
+          dataToSend = String.fromCharCode(valueToSend);
+        }else{
+          dataToSend = valueToSend.toString();
+        }
         print(dataToSend);
         _sendData(dataToSend);
       }else{
