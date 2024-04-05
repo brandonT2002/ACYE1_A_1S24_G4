@@ -57,7 +57,9 @@ class _HomePageState extends State<HomePage> {
     // Aquí puedes actualizar la UI de acuerdo al estado de selectedWeather
     setState(() {
       int selectedIndex = selectedWeather.value.indexOf(true);
-      weather = selectedIndex == 0 ? 'Auto' : 'Manual';
+      weather = selectedIndex == 0 ? 'S' : 'M';
+     // String valor = selectedIndex == 0 ? 'S' : 'N' ;
+      //_sendData(weather);
     });
   }
   // power button switched
@@ -79,16 +81,35 @@ class _HomePageState extends State<HomePage> {
     });
     
     if (index == 0) {
+      print(mySmartDevices[index][2]);
       for (int i = 1; i < mySmartDevices.length; i++) {
         // Calcular el valor a enviar basado en el índice y el patrón especificado
-        String dataToSend = i.toString();
-        _sendData(dataToSend);
+        if(!mySmartDevices[index][2]){
+          int valueToSend = i+ 6 ;
+          String dataToSend = valueToSend.toString();
+          _sendData(dataToSend);
+        }else{
+          String dataToSend = i.toString();
+          _sendData(dataToSend);
+        }
+
       }
     } else {
       // Calcular el valor a enviar basado en el índice y el patrón especificado
-      int valueToSend = index; // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
-      String dataToSend = valueToSend.toString();
-      _sendData(dataToSend);
+      //print(mySmartDevices[index][2]);
+      //print(index);
+      if(!mySmartDevices[index][2]){
+        int valueToSend = index + 6; // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
+        String dataToSend = valueToSend.toString();
+        print(dataToSend);
+        _sendData(dataToSend);
+      }else{
+        int valueToSend = index; // Si el interruptor está activado, se suma 1, de lo contrario se suma 2
+        String dataToSend = valueToSend.toString();
+        print(dataToSend);
+        _sendData(dataToSend);
+      }
+
     }
 
     // Actualizar el estado del widget
@@ -311,39 +332,39 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // welcome home
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: horizontalPadding,
-                vertical: 25,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Smart Home"),
-                  Text(
-                    "Grupo4 - Arqui1",
-                    style: TextStyle(
-                      fontSize: 35,
-                      fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // welcome home
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding,
+                  vertical: 25,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Smart Home"),
+                    Text(
+                      "Grupo4 - Arqui1",
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text("Dispositivos Inteligentes"),
-                ],
+                    Text("Dispositivos Inteligentes"),
+                  ],
+                ),
               ),
-            ),
 
-            // Widget para mostrar la temperatura ambiente
-            _buildTemperatureWidget(),
+              // Widget para mostrar la temperatura ambiente
+              _buildTemperatureWidget(),
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            // smart devices + carousel
-            Expanded(
-              child: Column(
+              // smart devices + carousel
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
@@ -376,7 +397,7 @@ class _HomePageState extends State<HomePage> {
                               iconPath: smartDevice[1],
                               powerOn: smartDevice[2],
                               onChanged: (value) => powerSwitchChanged(value, index),
-                              disabled: (index == 0 || index == 4 || index == 5 || index == 6) && weather == "Auto",
+                              disabled: (index == 0 || index == 4 || index == 5 || index == 6) && weather == "S",
                             ),
                           );
                         },
@@ -400,51 +421,48 @@ class _HomePageState extends State<HomePage> {
                     }).toList(),
                   ),
                   const SizedBox(height: 10),
-                  Expanded(
-                    child: GridView.builder(
-                      itemCount: 2,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 1 / 1,
-                      ),
-
-                      itemBuilder: (context, index) {
-                        return CardExample(
-                          titleCard: extras[index][0],
-                          iconPath:  extras[index][1],
-                          value:  extras[index][2],
-                        );
-                      },
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: 2,
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1 / 1,
                     ),
+                    itemBuilder: (context, index) {
+                      return CardExample(
+                        titleCard: extras[index][0],
+                        iconPath:  extras[index][1],
+                        value:  extras[index][2],
+                      );
+                    },
                   ),
 
-                  Expanded(
-                    child: GridView.builder(
-                      itemCount: 1,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 1,
-                        childAspectRatio: 1 / 0.35,
-                      ),
-
-                      itemBuilder: (context, index) {
-                        return CardHorizontal(
-                          titleCard: "ttest",
-                          iconPath:  "assets/door.png",
-                          value:  "Abierto",
-                        );
-                      },
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: 1,
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1,
+                      childAspectRatio: 1 / 0.35,
                     ),
+                    itemBuilder: (context, index) {
+                      return CardHorizontal(
+                        titleCard: "ttest",
+                        iconPath:  "assets/door.png",
+                        value:  "Abierto",
+                      );
+                    },
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+
     );
   }
 }
