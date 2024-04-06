@@ -13,16 +13,19 @@ const int bluetoothTx = 10;
 const int bluetoothRx = 11;
 int SENSOR = 6;
 int VALOR; 
-const int pinPWM = 10;
+const int pinPWM = 2;
 int mq2 = A9;
 
 void sensorMQ2() {
   int mq2Value = analogRead(mq2);
   Serial.println(mq2Value);
   Serial.println(mq2Value);
-  if (mq2Value >= 600) {
+  if (mq2Value >= 300) {
     // cambiarEstado(SENSOR_PROPANO_ON);
     analogWrite(pinPWM, 200);
+  }else {
+    digitalWrite(pinPWM, 0);
+    // cambiarEstado(VENTILADORES_OFF);
   }
 }
 
