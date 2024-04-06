@@ -187,24 +187,24 @@ Sistema Iot para controlar y monitorear diferentes servicios de una vivienda mod
 1. Se necesitar tener instalada la app en el dispositivo movil.
    
 <p align="center">
-    <img src="img/1.jpeg" width="250">
+    <img src="/PRACTICA 3/Documentacion/imagenes/1.jpeg" width="250">
 </p>
 
 1. Emparejar el dispositivo al sensor , este proceso asegura que ambos dispositivos esten autorizados para cambiar datos.
    
 <p align="center">
-    <img src="img/2.jpeg" width="250">
+    <img src="/PRACTICA 3/Documentacion/imagenes/2.jpeg" width="250">
 </p>
 
 1. Una vez que la conexión Bluetooth está establecida, el celular y el sensor pueden comenzar a intercambiar datos para el funcionamiento.
    
 <p align="center">
-    <img src="img/3.jpeg" width="250">
+    <img src="/PRACTICA 3/Documentacion/imagenes/3.jpeg" width="250">
 </p>
 
 1. La vivienda incorpora una sofisticada instalacion de sensores Estos dispositivos inteligentes permiten la captura de datos en tiempo real, proporcionando a los habitantes un control sin precedentes sobre el entorno doméstico.
 
 <p align="center">
-    <img src="img/5.jpeg" width="400">
-    <img src="img/6.jpeg" width="400">
+    <img src="/PRACTICA 3/Documentacion/imagenes/5.jpeg" width="400">
+    <img src="/PRACTICA 3/Documentacion/imagenes/6.jpeg" width="400">
 </p>
