@@ -82,10 +82,10 @@ class _HomePageState extends State<HomePage> {
     
     if (index == 0) {
       print(mySmartDevices[index][2]);
-      for (int i = 1; i < mySmartDevices.length+1; i++) {
+      for (int i = 1; i < mySmartDevices.length; i++) {
         // Calcular el valor a enviar basado en el índice y el patrón especificado
         if(!mySmartDevices[index][2]){
-          int valueToSend = i+ 5 ;
+          int valueToSend = i+ 6 ;
           String dataToSend = "";
           if (valueToSend >= 10){
             valueToSend +=55;
