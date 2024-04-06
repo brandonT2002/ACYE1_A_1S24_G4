@@ -13,11 +13,22 @@ const int bluetoothTx = 10;
 const int bluetoothRx = 11;
 int SENSOR = 6;
 int VALOR; 
+const int pinPWM = 10;
+int mq2 = A9;
 
+void sensorMQ2() {
+  int mq2Value = analogRead(mq2);
+  Serial.println(mq2Value);
+  Serial.println(mq2Value);
+  if (mq2Value >= 600) {
+    // cambiarEstado(SENSOR_PROPANO_ON);
+    analogWrite(pinPWM, 200);
+  }
+}
 
 #define DHTPIN 22       // Pin al que está conectado el sensor DHT11
 #define DHTTYPE DHT11  // Tipo de sensor DHT que estás usando
-const int pinPWM = 10;
+// const int pinPWM = 10;
 DHT dht(DHTPIN, DHTTYPE);
 
 bool selecOp, selecMode;
@@ -288,7 +299,7 @@ void Bluetooth() {
   // Comprueba si hay datos disponibles para leer desde el Bluetooth
   if (bluetooth.available()) {
     char receivedChar = bluetooth.read();  // Lee el carácter recibido
-    Serial.println(receivedChar);
+    // Serial.println(receivedChar);
     // Enciende o apaga el LED correspondiente según el carácter recibido
    switch (receivedChar) {
       case 'S':
@@ -323,6 +334,8 @@ void setup() {
   pinMode(segmentPinsDisplay2[1], OUTPUT);  //B
   pinMode(segmentPinsDisplay2[2], OUTPUT);  //C
   pinMode(segmentPinsDisplay2[3], OUTPUT);  //D
+
+  pinMode(mq2, INPUT);  
   selecOp= 1;
   // Inicia la comunicación serial para el Bluetooth a 9600 baudios
   bluetooth.begin(9600);
@@ -339,4 +352,5 @@ void loop() {
     sensorDHT11();
     // Coloca aquí el código que deseas ejecutar cada 30 segundos
   }
+  sensorMQ2();
 }
