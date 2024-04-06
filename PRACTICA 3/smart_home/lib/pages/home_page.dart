@@ -29,9 +29,10 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   // Datos de sensores
-  String _temperature = "0";
-  String _humedity = "0";
-  String _propane = "0";
+  String _temperature = "N/A";
+  String _humedity = "N/A";
+  String _propane = "N/A";
+  String _door = "N/A";
   
   // padding constants
   final double horizontalPadding = 40;
@@ -68,6 +69,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Notificación
   void _showAlertDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -96,7 +98,6 @@ class _HomePageState extends State<HomePage> {
         for (int i = 0; i < mySmartDevices.length; i++) {
           mySmartDevices[i][2] = value;
         }
-        _showAlertDialog(context, 'Se detectó un objeto en la entrada.');
       } else {
         // Si se cambia otro switch, actualizar solo ese switch
         mySmartDevices[index][2] = value;
@@ -258,9 +259,15 @@ class _HomePageState extends State<HomePage> {
           // Utiliza split para dividir el mensaje por '\n' y toma la primera parte
           _mq2 = message.split('\n')[0].split(";");
           if (_mq2[0].codeUnitAt(0) != 13){
-            _humedity = _mq2[0];
-            _temperature = _mq2[1];
-            _propane = _mq2[2];
+            if (_mq2[0] == "sensores") {
+              _humedity = _mq2[1];
+              _temperature = _mq2[2];
+              _propane = _mq2[3];
+            } else if (_mq2[0] == "puerta"){
+              _door = _mq2[1];
+            } else if (_mq2[0] == "entrada") {
+              _showAlertDialog(context, 'Se detectó un objeto en la entrada.');
+            }
           }
         });
       });
@@ -518,7 +525,7 @@ class _HomePageState extends State<HomePage> {
                       return CardHorizontal(
                         titleCard: "ttest",
                         iconPath:  "assets/door.png",
-                        value:  "Abierto",
+                        value:  _door,
                       );
                     },
                   ),
