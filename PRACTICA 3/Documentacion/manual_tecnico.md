@@ -44,5 +44,9 @@ Bucle Principal:
 
 - El bucle principal ( loop() ): realiza lecturas de sensores, controla actuadores, maneja la comunicación Bluetooth y espera 1 segundo entre mediciones.
 
+- La imagen presentada muestra el diagrama de conexiones detallado de un proyecto electrónico utilizando un Arduino Mega. El diagrama incluye una pantalla LCD JHD-2X16-I2C, que se conecta al Arduino a través de los pines SCL y SDA para la comunicación I2C, así como a los pines de 5V y GND para su alimentación. Adicionalmente, se muestra I2C que comparte las líneas SCL y SDA con la pantalla LCD para la comunicación de datos, y también se conecta a sus propias fuentes de alimentación y tierra. Este esquema proporciona una guía visual clara para la correcta conexión de los componentes y facilita el montaje físico del proyecto.
+
+<img src="./imagenes/diagrama arqui.bmp" width="400">
+
 ---
 
