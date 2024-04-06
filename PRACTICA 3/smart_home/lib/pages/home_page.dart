@@ -28,6 +28,11 @@ class _HomePageState extends State<HomePage> {
   int times = 0;
   int _currentIndex = 0;
 
+  // Datos de sensores
+  String _temperature = "0";
+  String _humedity = "0";
+  String _propane = "0";
+  
   // padding constants
   final double horizontalPadding = 40;
   final double verticalPadding = 25;
@@ -47,8 +52,8 @@ class _HomePageState extends State<HomePage> {
 
   List extras = [
     // [ name, path, status ]
-    ["Humedad", "assets/humidity.png", "2"],
-    ["Propano", "assets/Propane.png", "11"],
+    ["Humedad", "assets/humidity.png"],
+    ["Propano", "assets/Propane.png" ],
   ];
   String weather = 'No se ha seleccionado el clima';
   final ValueNotifier<List<bool>> selectedWeather = ValueNotifier([true, false]);
@@ -62,6 +67,27 @@ class _HomePageState extends State<HomePage> {
       _sendData(weather);
     });
   }
+
+  void _showAlertDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sistema de Seguridad'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // power button switched
   void powerSwitchChanged(bool value, int index) {
     setState(() {
@@ -70,6 +96,7 @@ class _HomePageState extends State<HomePage> {
         for (int i = 0; i < mySmartDevices.length; i++) {
           mySmartDevices[i][2] = value;
         }
+        _showAlertDialog(context, 'Se detectó un objeto en la entrada.');
       } else {
         // Si se cambia otro switch, actualizar solo ese switch
         mySmartDevices[index][2] = value;
@@ -82,10 +109,10 @@ class _HomePageState extends State<HomePage> {
     
     if (index == 0) {
       print(mySmartDevices[index][2]);
-      for (int i = 1; i < mySmartDevices.length+1; i++) {
+      for (int i = 1; i < mySmartDevices.length; i++) {
         // Calcular el valor a enviar basado en el índice y el patrón especificado
         if(!mySmartDevices[index][2]){
-          int valueToSend = i+ 5 ;
+          int valueToSend = i+ 6 ;
           String dataToSend = "";
           if (valueToSend >= 10){
             valueToSend +=55;
@@ -191,7 +218,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(width: 10),
           Text(
             //'$weather', // Puedes cambiar esto con la temperatura real
-            "Temperatura: 25°C",
+            "Temperatura: $_temperature°C",
             style: TextStyle(fontSize: 20),
           ),
         ],
@@ -208,12 +235,39 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _receiveData() {
-    _connection?.input?.listen((event) {
-      if (String.fromCharCodes(event) == "p") {
-        setState(() => times = times + 1);
-      }
-    });
-  }
+  String buffer = ''; // Variable para acumular los datos recibidos
+  List<String> _mq2;
+  
+  _connection?.input?.listen((List<int> event) {
+    String dataReceived = utf8.decode(event); // Convierte los datos a una cadena UTF-8
+    
+    // Agrega los datos recibidos al búfer
+    buffer += dataReceived;
+    
+    // Verifica si el búfer contiene un mensaje completo terminado con un carácter de nueva línea
+    if (buffer.contains('\n')) {
+      // Separa el mensaje completo del búfer
+      List<String> messages = buffer.split('\n');
+      
+      // El último elemento de 'messages' puede ser un mensaje incompleto, guárdalo para el próximo bucle
+      buffer = messages.removeLast();
+      
+      // Procesa cada mensaje completo
+      messages.forEach((message) {
+        setState(() {
+          // Utiliza split para dividir el mensaje por '\n' y toma la primera parte
+          _mq2 = message.split('\n')[0].split(";");
+          if (_mq2[0].codeUnitAt(0) != 13){
+            _humedity = _mq2[0];
+            _temperature = _mq2[1];
+            _propane = _mq2[2];
+          }
+        });
+      });
+    }
+  });
+}
+
 
   void _sendData(String data) {
     if (_connection?.isConnected ?? false) {
@@ -446,7 +500,7 @@ class _HomePageState extends State<HomePage> {
                       return CardExample(
                         titleCard: extras[index][0],
                         iconPath:  extras[index][1],
-                        value:  extras[index][2],
+                        value: extras[index][0] == "Humedad" ? _humedity : _propane,
                       );
                     },
                   ),
