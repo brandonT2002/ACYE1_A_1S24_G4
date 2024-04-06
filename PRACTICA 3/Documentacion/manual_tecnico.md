@@ -48,5 +48,24 @@ Bucle Principal:
 
 <img src="./imagenes/diagrama arqui.bmp" width="400">
 
+##### Costos de implementacion
+
+| Componente | Descripción | Precio (Q)|
+|------------|-------------|--------|
+| Sensor de temperatura y humedad DHT11 | Sensor para medir la temperatura y humedad del ambiente | 22 |
+| Sensor de humedad de suelo | Sensor para medir la humedad del suelo | 5 |
+| Sensor de efecto Hall | Sensor para la detección de campos magnéticos | 15 |
+| Luces LED | Luces controladas por pines específicos | 6 |
+| Bomba de agua | Bomba controlada por un relé | 30  |
+| Servomotor | Motor para ajustar posición basado en el sensor de efecto Hall | 31 |
+| Módulo Bluetooth | Módulo para la comunicación Bluetooth | 50 |
+| Maqueta          |                                       | 350  |
+| H-Bridge Motor Driver | Controlador para los ventiladores | 37 |
+| Ventiladores 12v 4x4cm | Ventiladores para la circulación de aire | 23 |
+| MD-DQ9 | sensor gas | 34 |
+| Módulo de resistencia |  luz | 18 |
+| Total |  | 621 |
+
+
 ---
 
